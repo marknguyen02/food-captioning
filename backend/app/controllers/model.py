@@ -1,0 +1,35 @@
+from fastapi import APIRouter, HTTPException, Depends, UploadFile, File
+from app.core.dependencies import get_current_user
+from app.models import generate_caption, classify_image, inverse_cooking
+
+
+router = APIRouter()
+
+
+@router.post('/label')
+async def classify(file: UploadFile=File(...), user_id = Depends(get_current_user)):
+    image_bytes = await file.read()
+    result = classify_image(image_bytes)
+    return {'label': result}
+
+
+@router.post('/title')
+async def get_caption(file: UploadFile=File(...), user_id = Depends(get_current_user)):
+    image_bytes = await file.read()
+    caption = generate_caption(image_bytes)
+    return {"title": caption.capitalize() + '.'}
+
+
+@router.post('/recipe')
+async def inverse(file: UploadFile=File(...), user_id = Depends(get_current_user)):
+    image_bytes = await file.read()
+    ingrs, instrs = inverse_cooking(image_bytes)
+    ingrs = [ingr.capitalize().replace('_', ' ') for ingr in ingrs]
+    return {
+        'ingredients': ingrs, 
+        'instructions': instrs
+    }
+
+
+
+    
