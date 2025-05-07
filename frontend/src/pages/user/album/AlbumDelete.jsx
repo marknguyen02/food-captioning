@@ -2,6 +2,7 @@ import { deleteAlbums } from "../../../services/albumService"
 import { Modal, message } from "antd"
 import { useState } from "react"
 
+
 const Delete = ({ openDelete, setOpenDelete, selectedAlbums, onSuccess }) => {
     const [isLoading, setIsLoading] = useState(false)
 
@@ -21,30 +22,26 @@ const Delete = ({ openDelete, setOpenDelete, selectedAlbums, onSuccess }) => {
     }
 
     const modalStyles = `
-        .custom-modal .ant-modal-content {
+        .album-delete-custom-modal .ant-modal-content {
             background-color: #1e293b;
             color: #f8fafc;
         }
-        .custom-modal .ant-modal-header {
+        .album-delete-custom-modal .ant-modal-header {
             background-color: #1e293b;
             border-bottom: none;
         }
-        .custom-modal .ant-modal-footer {
+        .album-delete-custom-modal .ant-modal-footer {
             background-color: #1e293b;
             border-top: none;
         }
-        .custom-modal .ant-rate-star:not(.ant-rate-star-full) .ant-rate-star-first,
-        .custom-modal .ant-rate-star:not(.ant-rate-star-full) .ant-rate-star-second {
+        .album-delete-custom-modal .ant-rate-star:not(.ant-rate-star-full) .ant-rate-star-first,
+        .album-delete-custom-modal .ant-rate-star:not(.ant-rate-star-full) .ant-rate-star-second {
             color: #475569;
         }
-        .custom-modal .ant-rate-star-full .ant-rate-star-first,
-        .custom-modal .ant-rate-star-full .ant-rate-star-second {
+        .album-delete-custom-modal .ant-rate-star-full .ant-rate-star-first,
+        .album-delete-custom-modal .ant-rate-star-full .ant-rate-star-second {
             color: #fbbf24;
 
-        }
-
-        .custom-modal .ant-modal-close {
-            display: none !important;
         }
     `
 
@@ -56,14 +53,14 @@ const Delete = ({ openDelete, setOpenDelete, selectedAlbums, onSuccess }) => {
                 onCancel={() => setOpenDelete(false)}
                 onOk={handleDeleteAlbums}
                 confirmLoading={isLoading}
-                okText="Delete"
                 okType="danger"
-                cancelText="Cancel"
+                cancelText={null}
                 centered
                 title={<h2 className="text-xl font-semibold bg-clip-text text-transparent bg-gradient-to-r from-cyan-400 to-purple-400 mb-4">
                     Rename Album
                 </h2>}
-                className="custom-modal"
+                className="album-delete-custom-modal"
+                closeIcon={null}
             >
                 <p>
                     Are you sure you want to delete{" "}

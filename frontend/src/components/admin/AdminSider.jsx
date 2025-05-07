@@ -6,7 +6,7 @@ import {
     faGear,
     faComputer,
     faUsers,
-    faFileAlt
+    faComments
 } from "@fortawesome/free-solid-svg-icons";
 import { useNavigate } from 'react-router-dom';
 
@@ -21,16 +21,16 @@ function Sider({ isSiderCollapsed }) {
             onClick: () => navigate('/'),
         },
         {
-            key: "user",
+            key: "users",
             icon: <FontAwesomeIcon icon={faUsers} />,
             label: "Users",
             onClick: () => navigate('/users'),
         },
         {
-            key: "report",
-            icon: <FontAwesomeIcon icon={faFileAlt} />,
-            label: "Report",
-            onClick: () => navigate('/report'),
+            key: "feedback",
+            icon: <FontAwesomeIcon icon={faComments} />,
+            label: "Feedback",
+            onClick: () => navigate('/feedback'),
         },
         {
             key: "system",

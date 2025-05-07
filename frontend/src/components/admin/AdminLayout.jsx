@@ -23,26 +23,19 @@ function AdminLayout() {
                 collapsible={true}
                 collapsed={isSiderCollapsed} 
                 onCollapse={() => setIsSiderCollapsed(!isSiderCollapsed)}
-                style={{ 
-                  background: '#F3F4F6', 
-                }}
+
             >
               <Sider isSiderCollapsed={isSiderCollapsed}/>
             </Layout.Sider>
         </>
       
       <Layout>
-        <Layout.Header className='!p-0 w-full !bg-[#F3F4F6]'>
+        <Layout.Header className='!p-0 w-full'>
           <Header/>
         </Layout.Header>
         
         <Layout.Content
-          style={{
-            padding: 24,
-            margin: 0,
-            minHeight: 280,
-            background: '#fff',
-          }}
+          className="!p-[15px] !w-full !h-full !bg-[#F8FAFC] !overflow-auto"
         >
           <Outlet />
         </Layout.Content>

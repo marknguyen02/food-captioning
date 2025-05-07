@@ -112,7 +112,7 @@ function Media() {
             }
 
             await updateAlbum(album, localStorage.getItem('at'))
-            message.success('')
+            message.success('Update thumbnail successfully')
         } catch (err) {
             message.error('')
             console.log(err.message)
@@ -172,7 +172,7 @@ function Media() {
                 </div>
             </div>
 
-            <div className='w-full h-full max-w-[1860px] bg-[#20262E] p-2.5 overflow-auto'>
+            <div className={`w-full h-full max-w-[1860px] bg-[#20262E] p-2.5 overflow-auto ${activeSelect ? 'pb-[58px]' : ''}`}>
                 {filteredMedias.length > 0 ? (
                     <ImageList variant="masonry" cols={columns} gap={20}>
                         {filteredMedias.map(({media_id, media_url, media_name}) => (

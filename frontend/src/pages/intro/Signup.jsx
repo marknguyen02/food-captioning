@@ -55,16 +55,13 @@ function Signup() {
   };
 
   return (
-    <div className='flex items-center justify-center min-h-[80vh] p-5 bg-gradient-to-r from-blue-50 to-purple-50'>
-      <div 
-        className={`flex flex-col items-center !gap-6 transition-all duration-500 transform ${formVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'}`}
-        style={{ maxWidth: '500px', width: '100%' }}
-      >
-        <h1 className='text-xl font-bold text-[#CC4156] !mb-2'>Đăng ký tài khoản</h1>
+    <div className='flex h-full items-center justify-center p-5 bg-gradient-to-r from-blue-50 to-purple-50 not-md:p-2.5'>
+      <div className={`flex h-full flex-col items-center !gap-6 transition-all duration-500 transform min-w-[320px] max-w-[650px] w-full not-md:max-w-full not-md:min-w-0 ${formVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'}`}>
+        <p className='text-4xl not-md:text-3xl font-bold text-[#CC4156] !mb-2'>Đăng ký tài khoản</p>
 
         <Form
           form={form}
-          className='flex flex-col w-full bg-white rounded-2xl border border-[#d4d4d4] !p-8 shadow-lg'
+          className='flex flex-col w-full not-md:w-full bg-white rounded-2xl border border-[#d4d4d4] !p-8 not-md:!p-4 shadow-lg'
           layout="vertical"
           requiredMark={false}
           onFinish={handleSignup}

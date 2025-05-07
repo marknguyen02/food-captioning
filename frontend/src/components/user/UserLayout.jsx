@@ -22,21 +22,19 @@ function UserLayout() {
                     collapsible={true}
                     collapsed={isSiderCollapsed} 
                     onCollapse={() => setIsSiderCollapsed(!isSiderCollapsed)}
-                    className='!bg-[#1F2937] h-full w-full'
+                    className='!bg-[#1F2937] h-full w-full not-md:hidden'
                 >
                     <Sider isSiderCollapsed={isSiderCollapsed}/>
                 </Layout.Sider>
             </div>
 
-  
             <Layout>
                 <Layout.Header className="!p-0 w-full">
                     <Header />
                 </Layout.Header>
 
                 <Layout.Content 
-                    className="bg-[#20262E]"
-                    >
+                    className="bg-[#20262E] !w-full !h-full !overflow-auto">
                     <Outlet />
                 </Layout.Content>
             </Layout>

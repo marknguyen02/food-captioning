@@ -44,16 +44,16 @@ function Sider({ isSiderCollapsed }) {
     return (
         <>
             <div 
-                className="flex items-center justify-center gap-2 cursor-pointer h-[64px] bg-[#1b212e] px-4"
+                className="group flex items-center justify-center gap-2 cursor-pointer h-[64px] bg-[#1b212e] px-4 caret-transparent"
                 onClick={() => navigate('/')}
             >
                 <FontAwesomeIcon 
                     icon={faComputer} 
-                    className="text-xl text-gray-100 hover:bg-clip-text hover:text-transparent hover:bg-gradient-to-r hover:from-blue-500 hover:to-purple-500 transition-colors duration-300"
+                    className="text-xl group-hover:text-blue-400 transition-all duration-300"
                 />
                 {!isSiderCollapsed && (
                     <motion.span 
-                        className="text-xl text-gray-100 font-semibold"
+                        className="text-xl text-gray-100 font-semibold group-hover:text-blue-400 transition-all duration-300 select-none"
                         initial={{ opacity: 0, x: -10 }}
                         animate={{ opacity: 1, x: 0 }}
                         transition={{ duration: 0.3 }}

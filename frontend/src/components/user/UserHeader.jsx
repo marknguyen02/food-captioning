@@ -165,21 +165,21 @@ const MainPopoverContent = ({ fullname, openAccountModal, openSettingsModal }) =
             </div>
             <div className="py-3 flex flex-col gap-2">
                 <button 
-                    className="flex items-center gap-3 px-2 py-2 w-full text-gray-100 hover:bg-[#374151] hover:bg-opacity-80 hover:text-blue-400 rounded-xl transition-all duration-300"
+                    className="group flex items-center gap-3 px-2 py-2 w-full text-gray-100 hover:bg-[#374151] hover:bg-opacity-80 hover:text-blue-400 rounded-xl transition-all duration-300 hover:scale-105 transform"
                     onClick={openAccountModal}
                 >
-                    <FontAwesomeIcon icon={faUser} className="text-gray-100 w-4 group-hover:text-blue-400" />
+                    <FontAwesomeIcon icon={faUser} className="text-gray-100" />
                     <span className="text-base">Account</span>
                 </button>
                 <button 
-                    className="flex items-center gap-3 px-2 py-2 w-full text-gray-100 hover:bg-[#374151] hover:bg-opacity-80 hover:text-blue-400 rounded-xl transition-all duration-300"
+                    className="flex items-center gap-3 px-2 py-2 w-full text-gray-100 hover:bg-[#374151] hover:bg-opacity-80 hover:text-blue-400 rounded-xl transition-all duration-300 hover:scale-105 transform"
                     onClick={openSettingsModal}
                 >
                     <FontAwesomeIcon icon={faCog} className="text-gray-100 w-4 group-hover:text-blue-400" />
                     <span className="text-base">Settings</span>
                 </button>
                 <button
-                    className="flex items-center gap-3 px-2 py-2 w-full text-red-500 hover:bg-red-900/30 hover:text-red-400 rounded-xl transition-all duration-300"
+                    className="flex items-center gap-3 px-2 py-2 w-full text-red-500 hover:bg-red-900/30 hover:text-red-400 rounded-xl transition-all duration-300 hover:scale-105 transform"
                     onClick={handleLogout}
                 >
                     <FontAwesomeIcon icon={faSignOutAlt} className="text-red-500 w-4" />
@@ -208,7 +208,7 @@ const AccountModal = ({ isOpen, onClose, fullname, username, email }) => {
             }}
         >
             <div className="text-center mb-6">
-                <h2 className="text-xl font-semibold bg-clip-text text-transparent bg-gradient-to-r from-blue-500 to-purple-500">
+                <h2 className="text-xl font-semibold">
                     Account Details
                 </h2>
             </div>
@@ -265,27 +265,27 @@ const SettingsModal = ({ isOpen, onClose, openChangePasswordModal, openChangeEma
             }}
         >
             <div className="text-center mb-6">
-                <h2 className="text-xl font-semibold bg-clip-text text-transparent bg-gradient-to-r from-blue-500 to-purple-500">
+                <h2 className="text-xl font-semibold">
                     Settings
                 </h2>
             </div>
             <div className="space-y-2">
                 <button
-                    className="flex items-center gap-3 px-3 py-3 w-full text-gray-100 hover:bg-[#4B5563] hover:text-blue-400 rounded-xl transition-all duration-300 shadow-sm hover:shadow-md hover:scale-105 transform"
+                    className="flex items-center gap-3 px-3 py-3 w-full text-gray-100 rounded-xl transition-all duration-300 shadow-sm hover:shadow-md hover:scale-105 transform bg-[#223d63]"
                     onClick={openChangePasswordModal}
                 >
-                    <FontAwesomeIcon icon={faLock} className="text-gray-100 w-5 group-hover:text-blue-400" />
+                    <FontAwesomeIcon icon={faLock} className="text-gray-100 w-5" />
                     <span className="text-base">Change Password</span>
                 </button>
                 <button
-                    className="flex items-center gap-3 px-3 py-3 w-full text-gray-100 hover:bg-[#4B5563] hover:text-blue-400 rounded-xl transition-all duration-300 shadow-sm hover:shadow-md hover:scale-105 transform"
+                    className="flex items-center gap-3 px-3 py-3 w-full text-gray-100 rounded-xl transition-all duration-300 shadow-sm hover:shadow-md hover:scale-105 transform bg-[#223d63]"
                     onClick={openChangeEmailModal}
                 >
                     <FontAwesomeIcon icon={faEnvelope} className="text-gray-100 w-5 group-hover:text-blue-400" />
                     <span className="text-base">Change Email</span>
                 </button>
                 <button
-                    className="flex items-center gap-3 px-3 py-3 w-full text-red-500 hover:bg-red-900/30 hover:text-red-400 rounded-xl transition-all duration-300 shadow-sm hover:shadow-md hover:scale-105 transform"
+                    className="flex items-center gap-3 px-3 py-3 w-full text-red-500 hover:bg-red-900/30 hover:text-red-400 rounded-xl transition-all duration-300 shadow-sm hover:shadow-md hover:scale-105 transform bg-[#223d63]"
                     onClick={handleDeleteAccount}
                 >
                     <FontAwesomeIcon icon={faTrash} className="text-red-500 w-5" />
@@ -343,7 +343,7 @@ const ChangePasswordModal = ({ isOpen, onClose }) => {
             }}
         >
             <div className="text-center mb-6">
-                <h2 className="text-xl font-semibold bg-clip-text text-transparent bg-gradient-to-r from-blue-500 to-purple-500">
+                <h2 className="text-xl font-semibold">
                     Change Password
                 </h2>
             </div>
@@ -466,7 +466,7 @@ const ChangeEmailModal = ({ isOpen, onClose }) => {
             }}
         >
             <div className="text-center mb-6">
-                <h2 className="text-xl font-semibold bg-clip-text text-transparent bg-gradient-to-r from-blue-500 to-purple-500">
+                <h2 className="text-xl font-semibold">
                     Change Email
                 </h2>
             </div>

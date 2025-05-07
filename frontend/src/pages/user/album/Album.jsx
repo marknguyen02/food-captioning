@@ -38,10 +38,12 @@ function Album() {
     
     useEffect(() => {
         const handleResize = () => {
-            if (window.innerWidth <= 800) {
+            if (window.innerWidth <= 550) {
                 setColumns(1);
-            } else if (window.innerWidth > 800 && window.innerWidth <= 1350) {
+            } else if (window.innerWidth > 550 && window.innerWidth <= 1024) {
                 setColumns(2);
+            } else if (window.innerWidth > 1024 && window.innerWidth <= 1200) {
+                setColumns(3);
             } else {
                 setColumns(4);
             }
@@ -178,7 +180,7 @@ function Album() {
                 </div>
             </div>
 
-            <div className='w-full h-full max-w-[1860px] bg-[#20262E] p-2.5 overflow-auto'>
+            <div className={`w-full h-full max-w-[1860px] p-2.5 overflow-auto ${activeSelect ? 'pb-[58px]' : ''}`}>
                 {filteredAlbums.length > 0 ? (
                     <ImageList cols={columns} gap={20}>
                         {filteredAlbums.map(({album_id, album_name, thumbnail_url}) => (

@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { Drawer, Input, AutoComplete, Button, Checkbox } from "antd";
-import { SearchOutlined } from '@ant-design/icons';
+import { CloseOutlined, SearchOutlined } from '@ant-design/icons';
 import { ImageList, ImageListItem, ImageListItemBar } from "@mui/material";
 import { LazyLoadImage } from "react-lazy-load-image-component";
 import { fetchAllAlbums } from "../../../services/albumService";
@@ -45,7 +45,7 @@ const SaveDrawer = ({ openSaveCard, setOpenSaveCard, hasSaved, setHasSaved, capt
 
     useEffect(() => {
         const handleResize = () => {
-            if (window.innerWidth <= 256) {
+            if (window.innerWidth <= 550) {
                 setColumns(1);
             } else if (window.innerWidth <= 1024) {
                 setColumns(2);
@@ -155,7 +155,7 @@ const SaveDrawer = ({ openSaveCard, setOpenSaveCard, hasSaved, setHasSaved, capt
                 open={openSaveCard}
                 onClose={resetAndCloseDrawer}
                 placement="right"
-                width="min(650px, 100vw)"
+                width="min(750px, 100vw)"
                 className="!bg-[#1E293B]"
                 extra={
                     <Button 
@@ -167,6 +167,7 @@ const SaveDrawer = ({ openSaveCard, setOpenSaveCard, hasSaved, setHasSaved, capt
                         Lưu
                     </Button>
                 }
+                closeIcon={<CloseOutlined className="!text-white hover:scale-105 transform hover:!text-red-600" />}
             >
                 <div className="flex flex-col gap-5 w-full h-full overflow-auto">
                     <Input
@@ -197,7 +198,7 @@ const SaveDrawer = ({ openSaveCard, setOpenSaveCard, hasSaved, setHasSaved, capt
                     <ImageList 
                         cols={columns} 
                         gap={columns === 1 ? 8 : columns === 2 ? 12 : 20} 
-                        className="!p-4 sm:!p-2 lg:!p-3 mt-1.5 max-h-full"
+                        className="!p-4 sm:!p-2 lg:!p-3 mt-1.5 max-h-full not-md:!gap-[18px]"
                     >
                         {filteredAlbums.map(({ album_id, album_name, thumbnail_url }) => (
                             <ImageListItem 
@@ -208,7 +209,7 @@ const SaveDrawer = ({ openSaveCard, setOpenSaveCard, hasSaved, setHasSaved, capt
                                     setSelectedId(selectedId === album_id ? undefined : album_id);
                                 }}
                             >
-                                <div className="flex flex-col justify-center bg-[#1E293B] p-2 rounded-xl">
+                                <div className="flex flex-col justify-center bg-[#263957] p-2 rounded-xl">
                                     <LazyLoadImage 
                                         src={thumbnail_url}
                                         className="h-40 w-full max-w-full object-cover rounded-lg aspect-square"

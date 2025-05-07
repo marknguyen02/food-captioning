@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { Modal, Form, Input, Button, message } from "antd";
 import { createAlbum } from "../../../services/albumService";
+import { CloseOutlined } from "@ant-design/icons";
 
 
 const Creation = ({ openCreation, setOpenCreation, onSuccess }) => {
@@ -26,35 +27,31 @@ const Creation = ({ openCreation, setOpenCreation, onSuccess }) => {
         }
     };
 
-    const modalStyles = `
-        .custom-modal .ant-modal-content {
-            background-color: #1e293b;
-            color: #f8fafc;
-        }
-        .custom-modal .ant-modal-header {
-            background-color: #1e293b;
-            border-bottom: 1px solid #334155;
-        }
-        .custom-modal .ant-modal-footer {
-            background-color: #1e293b;
-            border-top: 1px solid #334155;
-        }
-        .custom-modal .ant-modal-close-x {
-            
-        }
-        .custom-modal .ant-rate-star:not(.ant-rate-star-full) .ant-rate-star-first,
-        .custom-modal .ant-rate-star:not(.ant-rate-star-full) .ant-rate-star-second {
-            color: #475569;
-        }
-        .custom-modal .ant-rate-star-full .ant-rate-star-first,
-        .custom-modal .ant-rate-star-full .ant-rate-star-second {
-            color: #fbbf24;
-        }
-    `
-
     return (
         <>
-            <style>{modalStyles}</style>
+            <style>{`
+                .album-creation-custom-modal .ant-modal-content {
+                    background-color: #1e293b;
+                    color: #f8fafc;
+                }
+                .album-creation-custom-modal .ant-modal-header {
+                    background-color: #1e293b;
+                    border-bottom: none;
+                }
+                .album-creation-custom-modal .ant-modal-footer {
+                    background-color: #1e293b;
+                    border-top: none;
+                }
+                .album-creation-custom-modal .ant-rate-star:not(.ant-rate-star-full) .ant-rate-star-first,
+                .album-creation-custom-modal .ant-rate-star:not(.ant-rate-star-full) .ant-rate-star-second {
+                    color: #475569;
+                }
+                .album-creation-custom-modal .ant-rate-star-full .ant-rate-star-first,
+                .album-creation-custom-modal .ant-rate-star-full .ant-rate-star-second {
+                    color: #fbbf24;
+
+                }
+            `}</style>
             <Modal
                 open={openCreation}
                 onCancel={() => {
@@ -64,7 +61,8 @@ const Creation = ({ openCreation, setOpenCreation, onSuccess }) => {
                 footer={null}
                 centered
                 width={500}
-                className="custom-modal"
+                closeIcon={<CloseOutlined className="!text-white hover:scale-110 transform hover:!text-red-500" />}
+                className="album-creation-custom-modal"
             >
                 <h2 className="text-center text-xl font-semibold bg-clip-text text-transparent bg-gradient-to-r from-cyan-400 to-purple-400 mb-4">
                     Tạo mới bộ sưu tập

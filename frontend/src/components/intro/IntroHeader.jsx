@@ -44,6 +44,7 @@ function IntroHeader() {
                         onClick={() => handleClickPage(item.path)}
                     />
                 ))}
+
                 <Button 
                     className='w-[60px] border-blue-200 hover:!text-blue-600 hover:!border-blue-300 hover:!bg-blue-50 hover:!shadow-md hover:!shadow-blue-100/50 transition-all duration-300'
                     onClick={() => handleClickPage('signup')}
@@ -62,10 +63,10 @@ function IntroHeader() {
     )
 }
 
-const NavItem = ({ title, path, active, onClick }) => {
+const NavItem = ({ title, active, onClick }) => {
     return (
         <span 
-            className={`relative cursor-pointer select-none font-semibold transition-all duration-300 box-border ${
+            className={`relative cursor-pointer select-none font-semibold transition-all duration-300 box-border not-md:hidden ${
                 active ? 'text-blue-600' : 'text-gray-600 hover:text-blue-500 hover:scale-105'
             }`}
             onClick={onClick}

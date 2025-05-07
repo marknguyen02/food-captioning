@@ -21,7 +21,7 @@ function Header() {
     `;
 
     return (
-        <div className="flex items-center justify-end p-2 h-full w-full">
+        <div className="flex items-center justify-end p-2 h-full w-full !bg-[#F3F4F6]">
             <div className="flex items-center gap-6 sm:gap-4">
                 <>
                     <style>{popoverStyles}</style>

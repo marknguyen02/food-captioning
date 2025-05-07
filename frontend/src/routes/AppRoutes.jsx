@@ -94,9 +94,8 @@ function AppRoutes() {
         const intervalId = setInterval(() => {
             if (localStorage.getItem("at") && localStorage.getItem("hasLoggedIn")) {
                 handleRefresh();
-                alert("Session refreshed successfully.");
             }
-        }, 25 * 60 * 1000);
+        }, 30 * 60 * 1000);
         
         return () => clearInterval(intervalId);
     }, []);

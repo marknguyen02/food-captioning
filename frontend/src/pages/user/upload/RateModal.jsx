@@ -92,35 +92,35 @@ const RateModal = ({ isVisible, setIsVisible, hasRated, setHasRated, caption, fi
             </Button>
           </div>
         }
-        width={750}
+        width={700}
         title={
           <div className="bg-slate-800 py-2">
-            <p className="text-center text-2xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-cyan-400 to-purple-400">
+            <p className="text-center text-2xl not-md:text-xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-cyan-400 to-purple-400">
               Share Your Feedback
             </p>
           </div>
         }
         className="custom-modal"
       >
-        <div className="flex flex-col gap-6 p-4 bg-slate-800">
+        <div className="flex flex-col gap-6 not-md:gap-3 md:p-4 not-md:pt-2.5 bg-slate-800">
           <div className="text-center">
-            <h3 className="text-lg font-semibold text-emerald-200">How do you feel?</h3>
-            <p className="text-sm text-zinc-300">Please leave a rating to help us improve our service!</p>
+            <h3 className="text-lg not-md:text-base font-semibold text-emerald-200">How do you feel?</h3>
+            <p className="md:mt-2.5 text-sm text-zinc-300 not-md:hidden">Please leave a rating to help us improve our service!</p>
           </div>
 
           <div className="flex flex-col items-center">
-            <Rate className="text-4xl" onChange={setRating} value={rating} disabled={hasRated} />
-            {rating > 0 && <p className="mt-2 text-lg font-semibold text-amber-300">{ratingLabels[rating - 1]}</p>}
+            <Rate className="md:!text-2xl not-md:!text-xl" onChange={setRating} value={rating} disabled={hasRated} />
+            {rating > 0 && <p className="mt-3 not-md:mt-2 text-lg not-md:text-sm font-semibold text-amber-300">{ratingLabels[rating - 1]}</p>}
           </div>
 
           <div>
-            <h3 className="text-lg font-semibold text-emerald-200 mb-1">Any suggestions?</h3>
+            <h3 className="text-lg not-md:text-base font-semibold text-emerald-200 mb-1">Any suggestions?</h3>
             <textarea
               className="w-full p-3 border border-slate-600 rounded-lg outline-none bg-slate-700 text-stone-100 resize-none focus:border-slate-400 focus:ring-1 focus:ring-slate-400 transition-all duration-200"
               placeholder="Enter your feedback..."
               value={feedback}
               onChange={(e) => setFeedback(e.target.value)}
-              rows={6}
+              rows={window.innerWidth >= 760 ? 6 : 4}
               disabled={hasRated}
             />
           </div>

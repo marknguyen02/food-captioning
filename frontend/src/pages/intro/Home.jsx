@@ -51,16 +51,16 @@ function Home() {
 
     return (
         <motion.div 
-            className="flex flex-col gap-[100px] overflow-y-auto overflow-x-hidden p-8"
+            className="flex flex-col gap-[100px] overflow-y-auto overflow-x-hidden p-8 items-center"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ duration: 0.8 }}
         >
             {/* Hero Section */}
-            <div className="flex gap-[40px] items-center bg-white rounded-3xl p-8 shadow-xl">
+            <div className="flex not-md:flex-col gap-[40px] items-center bg-white rounded-3xl p-8 shadow-xl max-w-[2056px]">
                 <motion.img 
                     src="https://images.unsplash.com/photo-1516321497487-e288fb19713f?w=800&h=600&fit=crop&q=80" 
-                    className="w-[55%] rounded-[30px] shadow-lg object-cover h-96"
+                    className="md:w-[55%] not-md:hidden rounded-[30px] shadow-lg object-cover h-96"
                     initial={{ x: -100, opacity: 0 }}
                     animate={{ x: 0, opacity: 1 }}
                     transition={{ duration: 1, delay: 0.2 }}
@@ -73,10 +73,10 @@ function Home() {
                     animate={{ x: 0, opacity: 1 }}
                     transition={{ duration: 1, delay: 0.4 }}
                 >
-                    <span className="text-[36px] font-bold text-red-500 drop-shadow-md text-center">
+                    <span className="text-[36px] not-md:text-2xl font-bold text-red-500 drop-shadow-md text-center">
                         Trình tạo phụ đề cho ảnh và video
                     </span>
-                    <span className="text-gray-600 mt-2 text-xl text-center">
+                    <span className="text-gray-600 mt-2 text-xl not-md:text-base text-center">
                         Tạo phụ đề ngay lập tức cho video của bạn và tiếp cận khán giả toàn cầu!
                         Phần mềm tạo phụ đề video tự động với công nghệ AI.
                     </span>
@@ -91,32 +91,32 @@ function Home() {
 
             {/* Featured Products Section */}
             <motion.div 
-                className="flex flex-col gap-[30px] items-center bg-white rounded-3xl py-8 shadow-xl"
+                className="flex flex-col gap-[30px] items-center bg-white rounded-3xl py-8 shadow-xl max-w-[2056px] md:px-[30px]"
                 initial="hidden"
                 whileInView="visible"
                 viewport={{ once: true, amount: 0.3 }}
                 variants={containerVariants}
             >
                 <motion.span 
-                    className="text-[36px] font-bold text-red-500 drop-shadow-md"
+                    className="text-[36px] not-md:text-2xl font-bold text-red-500 drop-shadow-md"
                     variants={itemVariants}
                 >
                     Những sản phẩm nổi bật
                 </motion.span>
 
-                <div className="flex gap-[30px] justify-center flex-wrap">
+                <div className="flex not-md:flex-col gap-[30px] justify-center not-md:px-14">
                     {featuredProducts.map((src, index) => (
                         <motion.div 
                             key={index}
                             whileHover={{ scale: 1.08, rotate: 2, boxShadow: "0px 10px 25px rgba(0,0,0,0.15)" }}
                             transition={{ duration: 0.3 }}
-                            className="rounded-2xl overflow-hidden shadow-lg"
+                            className="rounded-2xl shadow-lg not-md:w-full"
                             variants={itemVariants}
                         >
                             <img
                                 src={src}
                                 alt={`Product ${index + 1}`}
-                                className="cursor-pointer h-64 w-80 object-cover"
+                                className="cursor-pointer w-full object-cover"
                             />
                         </motion.div>
                     ))}
@@ -133,30 +133,29 @@ function Home() {
             </motion.div>
 
             {/* About Section */}
-            <div className="flex items-center gap-12 bg-gray-50 rounded-3xl p-12 shadow-lg">
+            <div className="flex not-md:flex-col items-center gap-12 bg-gray-50 rounded-3xl p-12 shadow-lg">
                 <motion.div 
-                    className="w-1/2 flex flex-col gap-[25px] items-center"
+                    className="md:w-1/2 not-md:w-full flex flex-col gap-[25px] items-center"
                     initial={{ opacity: 0, y: 50 }}
                     whileInView={{ opacity: 1, y: 0 }}
                     viewport={{ once: true }}
                     transition={{ duration: 0.8 }}
                 >
-                    <h2 className="text-4xl font-bold text-red-500 drop-shadow-md">
+                    <h2 className="text-4xl not-md:text-2xl font-bold text-red-500 drop-shadow-md">
                         AI Caption Generator!
                     </h2>
-                    <p className="text-gray-600 mt-2 text-xl text-center">
+                    <p className="text-gray-600 mt-2 text-xl not-md:text-base text-center">
                         AI Caption Generator – Tạo caption cho ảnh chỉ trong vài giây với công nghệ trí tuệ nhân tạo tiên tiến nhất
                     </p>
                     <Button
                         onClick={() => navigate('/about-us')}
-                        className="bg-red-500 hover:bg-red-600 text-white font-bold py-3 px-8 rounded-full text-lg shadow-md transform transition hover:scale-105"
                     >
-                        <p className="text-lg">Về chúng tôi</p>
+                        <p className="text-lg not-md:text-sm">Về chúng tôi</p>
                     </Button>
                 </motion.div>
 
                 <motion.div 
-                    className="w-1/2 flex justify-center"
+                    className="w-1/2 not-md:hidden flex justify-center"
                     whileHover={{ scale: 1.05 }}
                     initial={{ opacity: 0, y: 50 }}
                     whileInView={{ opacity: 1, y: 0 }}

@@ -15,12 +15,13 @@ function IntroLayout() {
                         bg-gradient-to-b 
                         from-[rgba(204,229,255,0.5)] 
                         to-[rgba(255,255,255,0.5)] 
-                        overflow-auto"
+                        !overflow-auto !p-2.5"
+                       
                 >
                     <Outlet />
                 </Layout.Content>
             </Layout>
-            <Layout.Footer className="!p-0 !bg-[#FFFAFA] !h-[60px]">
+            <Layout.Footer className="!p-0 !bg-[#FFFAFA] !h-[60px] not-md:!hidden">
                 <Footer />
             </Layout.Footer>
         </Layout>

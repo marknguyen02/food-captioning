@@ -47,12 +47,12 @@ function Product() {
   ];
 
   return (
-    <div className="flex flex-col gap-6 max-w-[1860px] min-w-[850px] p-8 bg-gradient-to-b from-white to-blue-50">
-      <div className="flex gap-6 justify-between">
+    <div className="flex flex-col gap-6 w-full items-center p-8 bg-gradient-to-b from-white to-blue-50">
+      <div className="flex not-md:flex-col gap-6 justify-between max-w-[1860px]">
         {products.slice(0, 3).map((product, index) => (
           <div 
             key={product.id} 
-            className="w-1/3 overflow-hidden bg-white rounded-3xl shadow-xl transition-all duration-500 hover:scale-105 hover:shadow-2xl hover:shadow-blue-100/50 animate-fade-in"
+            className="w-1/3 not-md:w-full overflow-hidden bg-white rounded-3xl shadow-xl transition-all duration-500 hover:scale-105 hover:shadow-2xl hover:shadow-blue-100/50 animate-fade-in"
             style={{ animationDelay: `${index * 0.2}s` }}
           >
             <div className={`h-56 ${product.color} flex justify-center items-center overflow-hidden rounded-t-3xl relative group`}>
@@ -71,11 +71,11 @@ function Product() {
         ))}
       </div>
       
-      <div className="flex gap-6 justify-between">
+      <div className="flex not-md:flex-col gap-6 justify-between max-w-[1860px]">
         {products.slice(3, 6).map((product, index) => (
           <div 
             key={product.id} 
-            className="w-1/3 overflow-hidden bg-white rounded-3xl shadow-xl transition-all duration-500 hover:scale-105 hover:shadow-2xl hover:shadow-blue-100/50 animate-fade-in"
+            className="w-1/3 not-md:w-full overflow-hidden bg-white rounded-3xl shadow-xl transition-all duration-500 hover:scale-105 hover:shadow-2xl hover:shadow-blue-100/50 animate-fade-in"
             style={{ animationDelay: `${index * 0.2}s` }}
           >
             <div className={`h-56 ${product.color} flex justify-center items-center overflow-hidden rounded-t-3xl relative group`}>
