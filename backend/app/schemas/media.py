@@ -5,8 +5,9 @@ class MediaCreate(BaseModel):
     album_id: str
     media_url: str
     media_name: str
-    caption: str
     media_type: str
+    caption: str
+    name: Optional[str] = ''
     instructions: Optional[list[str]] = []
     ingredients: Optional[list[str]] = []
 
@@ -26,8 +27,9 @@ class MediaDetailResponse(BaseModel):
     media_name: str
     caption: str
     media_type: str
-    instructions: Optional[list[str]] = []
-    ingredients: Optional[list[str]] = []
+    name: str
+    instructions: list[str]
+    ingredients: list[str]
 
     class Config:
         from_attributes = True

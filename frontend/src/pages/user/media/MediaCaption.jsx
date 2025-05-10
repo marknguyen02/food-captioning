@@ -74,11 +74,20 @@ const Caption = ({ openCaption, setOpenCaption, selectedMediaId, setSelectedMedi
             >
                 {mediaInfo && <div className="space-y-6 p-4">
                     <div className="bg-slate-800 p-4 rounded-lg shadow-md">
-                        <h3 className="text-lg font-semibold text-pink-300 mb-2">Title</h3>
+                        <h3 className="text-lg font-semibold text-pink-300 mb-2">Caption</h3>
                         <p className="text-slate-200 leading-relaxed">
                             {mediaInfo?.caption}
                         </p>
                     </div>
+
+                    {mediaInfo.name && 
+                        <div className="bg-slate-800 p-4 rounded-lg shadow-md">
+                            <h3 className="text-lg font-semibold text-cyan-400 mb-2">Name</h3>
+                            <p className="text-slate-200 leading-relaxed">
+                                {mediaInfo?.name}
+                            </p>
+                        </div>
+                    }
 
                     {mediaInfo.ingredients.length > 0 && 
                         <div className="bg-slate-800 p-4 rounded-lg shadow-md">

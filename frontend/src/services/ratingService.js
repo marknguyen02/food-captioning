@@ -2,6 +2,7 @@ import { API } from './config'
 
 export async function createRating(formData, token) {
     console.log(formData);
+    console.log(formData);
     try {
         await API.post('/rating/create', formData, {
             headers: {

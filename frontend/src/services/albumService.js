@@ -56,3 +56,26 @@ export async function deleteAlbums(albumIds, token) {
         throw err;
     }
 }
+
+
+export async function countAlbums(token) {
+    try {
+        const response = await API.get('/album/count', {
+            headers: { 'Authorization': `Bearer ${token}` }
+        });
+
+        const data = response.data;
+
+        const totalPhotos = data.reduce((sum, album) => sum + album.count, 0);
+
+        const formatted = data.map(album => ({
+            name: album.album_name,
+            photos: album.count,
+            percentage: totalPhotos > 0 ? Number(((album.count / totalPhotos) * 100).toFixed(1)) : 0
+        }));
+
+        return formatted;
+    } catch (err) {
+        throw err
+    }
+}

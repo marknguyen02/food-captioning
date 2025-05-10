@@ -51,39 +51,30 @@ function AppRoutes() {
     };
 
     const loadUserData = async () => {
-        try {
-            setIsLoading(true);
-            const accessToken = localStorage.getItem('at');
-            const hasLoggedIn = localStorage.getItem('hasLoggedIn');
-            
-            if (accessToken) {
-                try {
-                    const userInfo = await readUser(accessToken);
-                    dispatch(setUser(userInfo));
-                    localStorage.setItem("hasLoggedIn", "true");
-                } catch (error) {
-                    if (error.response && (error.response.status === 401 || error.response.status === 403)) {
-                        if (hasLoggedIn) {
-                            await handleRefresh();
-                        } else {
-                            localStorage.removeItem('at');
-                        }
+        const accessToken = localStorage.getItem('at');
+        const hasLoggedIn = localStorage.getItem('hasLoggedIn');
+
+        if (accessToken) {
+            try {
+                setIsLoading(true);
+                const userInfo = await readUser(accessToken);
+                dispatch(setUser(userInfo));
+                localStorage.setItem("hasLoggedIn", "true");
+            } catch (error) {
+                if (error.response && (error.response.status === 401 || error.response.status === 403)) {
+                    if (hasLoggedIn) {
+                        await handleRefresh();
                     } else {
-                        throw error;
+                        localStorage.removeItem('at');
                     }
+                } else {
+                    throw error;
                 }
-            } else if (hasLoggedIn) {
-                await handleRefresh();
+            } finally {
+                setAuthChecked(true);
             }
-        } catch (err) {
-            console.error("Error loading user data:", err);
-            if (localStorage.getItem("hasLoggedIn")) {
-                await handleLogout();
-            }
-        } finally {
-            setIsLoading(false);
-            setAuthChecked(true);
         }
+        setIsLoading(false);
     };
 
     useEffect(() => {

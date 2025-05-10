@@ -10,7 +10,7 @@ class AlbumCreate(BaseModel):
 class AlbumUpdate(BaseModel):
     album_id: str
     album_name: Optional[str] = None
-    thumbnail_url: Optional[str] = None
+    thumbnail_id: Optional[str] = None
 
 
 class AlbumDelete(BaseModel):
@@ -25,3 +25,9 @@ class AlbumResponse(BaseModel):
 
     class Config:
         from_attributes = True
+
+
+class AlbumCount(BaseModel):
+    album_id: str
+    count: int
+    album_name: str

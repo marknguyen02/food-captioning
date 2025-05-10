@@ -173,7 +173,7 @@ function Upload() {
 			{caption.title && <div className="w-full max-w-4xl bg-gray-900 rounded-xl p-6 shadow-xl border border-gray-800 not-md:p-3">
 				<div className="mb-6 not-md:mb-2.5 rounded-lg overflow-hidden text-left">
 					<div className="p-4 not-md:px-3 bg-slate-800 ">
-						<h3 className="text-[22px] not-md:text-[18px] font-bold text-pink-300">Title</h3>
+						<h3 className="text-[22px] not-md:text-[18px] font-bold text-pink-300">Caption</h3>
 					</div>
 					<div className="bg-gray-800 px-4 rounded-b-lg not-md:px-3">
 						<p className="text-gray-200 text-lg not-md:text-[16px] font-medium break-all text-left">{caption.title}</p>
@@ -189,6 +189,27 @@ function Upload() {
 						</div>
 					</div>
 				</div>
+
+
+				{caption?.name && <div className="mb-6 not-md:mb-2.5 rounded-lg overflow-hidden text-left">
+					<div className="p-4 not-md:px-3 bg-slate-800 ">
+						<h3 className="text-[22px] not-md:text-[18px] font-bold text-cyan-400">Name</h3>
+					</div>
+					<div className="bg-gray-800 px-4 rounded-b-lg not-md:px-3">
+						<p className="text-gray-200 text-lg not-md:text-[16px] font-medium break-all text-left">{caption.name}</p>
+						<div className="flex justify-end mt-2 pb-4">
+							<Tooltip title="Copy Title">
+								<button 
+								className="text-pink-300 hover:text-pink-400 transition-colors duration-300 transform hover:scale-125 text-[18px] not-md:text-[16px]"
+								onClick={() => handleCopy(caption.name)}
+								>
+								<CopyOutlined />
+								</button>
+							</Tooltip>
+						</div>
+					</div>
+				</div>}
+
 
 				{caption.ingredients.length > 0 && 
 				<div className="mb-6 not-md:mb-2.5 rounded-lg overflow-hidden text-left">

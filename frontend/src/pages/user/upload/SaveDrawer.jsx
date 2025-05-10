@@ -99,6 +99,7 @@ const SaveDrawer = ({ openSaveCard, setOpenSaveCard, hasSaved, setHasSaved, capt
             album_id: selectedId,
             media_type: caption.label,
             caption: caption.title,
+            ...(caption.name && { name: caption.name }),
             ...(caption.instructions.length > 0 && { instructions: caption.ingredients }),
             ...(caption.ingredients.length > 0 && { ingredients: caption.instructions }),
         };
@@ -157,12 +158,12 @@ const SaveDrawer = ({ openSaveCard, setOpenSaveCard, hasSaved, setHasSaved, capt
                 placement="right"
                 width="min(750px, 100vw)"
                 className="!bg-[#1E293B]"
+                loading={isLoading}
                 extra={
                     <Button 
                         type="primary" 
                         onClick={handleSaveFile} 
                         loading={isLoading} 
-                        disabled={isLoading}
                     >
                         Lưu
                     </Button>

@@ -31,6 +31,7 @@ export async function generateCaption(file, token) {
                     'Authorization': `Bearer ${token}`
                 }
             })
+            result.name = response3.data.name
             result.ingredients = response3.data.ingredients;
             result.instructions = response3.data.instructions;
         } else {
@@ -38,8 +39,8 @@ export async function generateCaption(file, token) {
             result.instructions = []
         }
         return result
-    } catch (error) {
-        throw error
+    } catch (err) {
+        throw err
     }
 }
 

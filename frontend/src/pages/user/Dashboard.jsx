@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { 
     PieChart, 
     Pie, 
@@ -16,8 +16,10 @@ import {
     BarChart3,
     HardDrive
 } from 'lucide-react';
+import { countAlbums } from '../../services/albumService';
 
-const Dashboard = () => {
+
+function Dashboard() {
     const BASE_COLORS = [
         "#06b6d4",
         "#f59e0b",
@@ -50,6 +52,18 @@ const Dashboard = () => {
         { name: "Album C", size: 512, percentage: 12.5 },
         { name: "Album D", size: 512, percentage: 12.5 },
     ]);
+
+    useEffect(() => {
+        const fetchAlbumCounts = async () => {
+            try {
+                const data = await countAlbums(localStorage.getItem('at'));
+                setAlbumData(data)
+            } catch (err) {
+                console.log(err.message);
+            }
+        }
+        fetchAlbumCounts()
+    }, []);
 
     const totalPhotos = albumData.reduce((sum, item) => sum + item.photos, 0);
     

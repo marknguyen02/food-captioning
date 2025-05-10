@@ -56,7 +56,7 @@ function UserHeader() {
                         classNames={{ root: 'custom-popover' }}
                     >
                         <img 
-                            src="/avatar.png" 
+                            src="https://static.vecteezy.com/system/resources/previews/009/292/244/non_2x/default-avatar-icon-of-social-media-user-vector.jpg" 
                             className="h-[40px] sm:h-[36px] rounded-full cursor-pointer ring-2 ring-gray-700 hover:ring-4 hover:ring-gradient-to-r hover:from-blue-600 hover:to-purple-600 hover:scale-105 transition-all duration-300 text-transparent"
                         />
                     </Popover>

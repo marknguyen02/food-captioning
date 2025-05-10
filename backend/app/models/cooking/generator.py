@@ -52,7 +52,7 @@ def inverse_cooking(image_bytes):
     recipe_ids = outputs['recipe_ids'].cpu().numpy()
     outs, _ = prepare_output(recipe_ids[0], ingr_ids[0], ingrs_vocab, vocab)
     
-    return outs['ingrs'], outs['recipe']
+    return outs['title'], outs['ingrs'], outs['recipe']
 
 
 if __name__ == '__main__':

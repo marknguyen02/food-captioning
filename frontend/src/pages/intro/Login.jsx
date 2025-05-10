@@ -59,7 +59,7 @@ function Login() {
               required: true,
               message: 'Vui lòng nhập tên đăng nhập!'
             }]}
-            className='!mb-6'
+            className='!mb-6 text-left'
           >
             <Input
               prefix={<UserOutlined className="text-gray-400" />}
@@ -75,7 +75,7 @@ function Login() {
               required: true,
               message: 'Vui lòng nhập mật khẩu!'
             }]}
-            className='!mb-2'
+            className='!mb-2 text-left'
           >
             <Input.Password
               prefix={<LockOutlined className="text-gray-400" />}

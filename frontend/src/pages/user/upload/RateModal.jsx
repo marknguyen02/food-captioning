@@ -22,9 +22,10 @@ const RateModal = ({ isVisible, setIsVisible, hasRated, setHasRated, caption, fi
     const formData = {
       rate: rating,
       caption: caption.title,
-      ...(caption.instructions.length > 0 && { instructions: caption.instructions }),
-      ...(caption.ingredients.length > 0 && { ingredients: caption.instructions }),
-      ...(feedback && { feedback: feedback })
+      name: caption.name,
+      instructions: caption.instructions,
+      ingredients: caption.ingredients,
+      feedback: feedback
     }
 
     setIsLoading(true)
@@ -86,7 +87,6 @@ const RateModal = ({ isVisible, setIsVisible, hasRated, setHasRated, caption, fi
               type="primary"
               onClick={handleRate}
               loading={isLoading}
-              disabled={isLoading}
             >
               Submit Rating
             </Button>

@@ -1,9 +1,10 @@
 from fastapi import APIRouter, HTTPException, Response, Request, Depends
 from fastapi.security import OAuth2PasswordRequestForm
 from motor.motor_asyncio import AsyncIOMotorDatabase
+from botocore.client import BaseClient
 from app.schemas.auth import SignupRequest, UserResponse, UserUpdate
-from app.core.config import REFRESH_TOKEN_EXPIRE_DAYS
-from app.core.dependencies import get_db, get_current_user
+from app.core.config import config
+from app.core.dependencies import get_mongo_db, get_current_user, get_s3_client
 from app.utils.hashing import verify_password, hash_password
 from app.utils.token import create_token, verify_token
 from datetime import datetime, timedelta, timezone
@@ -14,7 +15,7 @@ router = APIRouter()
 
 
 @router.post('/login')
-async def login(response: Response, form_data: OAuth2PasswordRequestForm=Depends(), db: AsyncIOMotorDatabase=Depends(get_db)):
+async def login(response: Response, form_data: OAuth2PasswordRequestForm=Depends(), db: AsyncIOMotorDatabase=Depends(get_mongo_db)):
     user = await db['users'].find_one({"username": form_data.username})
     if user is None:
         raise HTTPException(status_code=400, detail="Invalid username or password")
@@ -29,12 +30,12 @@ async def login(response: Response, form_data: OAuth2PasswordRequestForm=Depends
         value=refresh_token,
         httponly=True,
         secure=True,
-        expires=datetime.now(timezone.utc) + timedelta(days=REFRESH_TOKEN_EXPIRE_DAYS)
+        expires=datetime.now(timezone.utc) + timedelta(days=config.REFRESH_TOKEN_EXPIRE_DAYS)
     )
     return {"access_token": access_token, "token_type": "bearer"}
 
 @router.post('/signup')
-async def signup(form_data: SignupRequest, db: AsyncIOMotorDatabase=Depends(get_db)):
+async def signup(form_data: SignupRequest, db: AsyncIOMotorDatabase=Depends(get_mongo_db)):
     existing = await db['users'].find_one({
         "$or": [{"username": form_data.username}]
     })
@@ -58,7 +59,7 @@ async def signup(form_data: SignupRequest, db: AsyncIOMotorDatabase=Depends(get_
 
 
 @router.get('/info', response_model=UserResponse)
-async def get_user(user_id: str = Depends(get_current_user), db: AsyncIOMotorDatabase = Depends(get_db)):
+async def get_user(user_id: str = Depends(get_current_user), db: AsyncIOMotorDatabase = Depends(get_mongo_db)):
     user = await db['users'].find_one({"user_id": user_id})
     if not user:
         raise HTTPException(status_code=404, detail="User not found")
@@ -81,7 +82,7 @@ async def refresh(request: Request, response: Response):
         value=new_rt,
         httponly=True,
         secure=True,
-        expires=datetime.now(timezone.utc) + timedelta(days=REFRESH_TOKEN_EXPIRE_DAYS)
+        expires=datetime.now(timezone.utc) + timedelta(days=config.REFRESH_TOKEN_EXPIRE_DAYS)
     )
     new_at = create_token({'sub': user_id})
     return {"access_token": new_at, "token_type": "bearer"}
@@ -91,7 +92,7 @@ async def refresh(request: Request, response: Response):
 async def update_user(
     request: UserUpdate,
     user_id: str = Depends(get_current_user),
-    db: AsyncIOMotorDatabase = Depends(get_db)
+    db: AsyncIOMotorDatabase = Depends(get_mongo_db)
 ):
     update_fields = request.model_dump(exclude_unset=True)
     cur_user = await db['users'].find_one({"user_id": user_id})
@@ -122,8 +123,27 @@ async def update_user(
 
 
 @router.delete('/delete')
-async def delete_account(user_id: str = Depends(get_current_user), db: AsyncIOMotorDatabase = Depends(get_db)):
+async def delete_account(
+    user_id: str = Depends(get_current_user), 
+    db: AsyncIOMotorDatabase = Depends(get_mongo_db),
+    s3_client: BaseClient = Depends(get_s3_client)
+):
     result_user = await db['users'].delete_one({'user_id': user_id})
+
+    media_cursor = db['medias'].find({'user_id': user_id})
+    obj_keys = []
+    async for media in media_cursor:
+        obj_keys.append(media['media_url'])
+
+    for obj_key in obj_keys:
+        try:
+            s3_client.delete_object(Bucket=config.BUCKET_NAME, Key=obj_key)
+        except Exception as e:
+            raise HTTPException(
+                status_code=500,
+                detail=f"An error occurred while deleting '{obj_key}' from S3 storage."
+        )
+    
     await db['medias'].delete_many({'user_id': user_id})
     await db['albums'].delete_many({'user_id': user_id})
 

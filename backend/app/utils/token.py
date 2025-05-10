@@ -1,7 +1,7 @@
 import jwt
 from jwt import PyJWTError, ExpiredSignatureError
 from datetime import datetime, timedelta, timezone
-from app.core.config import *
+from app.core.config import config
 from fastapi import HTTPException, status
 
 
@@ -9,19 +9,19 @@ def create_token(data: dict, typ: str='access') -> str:
     to_encode = data.copy()
     expire = datetime.now(timezone.utc)
     if typ == 'access':
-        expire += timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES)
+        expire += timedelta(minutes=config.ACCESS_TOKEN_EXPIRE_MINUTES)
     elif typ == 'refresh':
-        expire += timedelta(days=REFRESH_TOKEN_EXPIRE_DAYS)
+        expire += timedelta(days=config.REFRESH_TOKEN_EXPIRE_DAYS)
     else: 
         raise ValueError('Type token invalid')
     to_encode['exp'] = expire
-    token = jwt.encode(to_encode, JWT_SECRET_KEY, JWT_ALGORITHM)
+    token = jwt.encode(to_encode, config.JWT_SECRET_KEY, config.JWT_ALGORITHM)
     return token
 
 
 def verify_token(token)-> dict:
     try:
-        payload = jwt.decode(token, JWT_SECRET_KEY, algorithms=[JWT_ALGORITHM])
+        payload = jwt.decode(token, config.JWT_SECRET_KEY, algorithms=[config.JWT_ALGORITHM])
         return payload
     except ExpiredSignatureError:
         raise HTTPException(

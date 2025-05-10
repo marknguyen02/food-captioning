@@ -104,11 +104,11 @@ function Media() {
 
     const handleUpdateThumbnailUrl = async () => {
         const mediaId = selectedMedias[0]
-        const thumbnailUrl = medias.find(media => media.media_id === mediaId).media_url
+        const thumbnailId = medias.find(media => media.media_id === mediaId).media_id
         try {
             const album = {
                 album_id: albumId,
-                thumbnail_url: thumbnailUrl
+                thumbnail_id: thumbnailId
             }
 
             await updateAlbum(album, localStorage.getItem('at'))
