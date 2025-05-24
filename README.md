@@ -12,27 +12,6 @@ Visual Captioning là dự án tạo chú thích tự động cho ảnh sử d�
 - **Lưu trữ đám mây** để quản lý hình ảnh và mô tả
 - **API RESTful** cho tích hợp với các ứng dụng khác
 
-## Cấu trúc dự án
-
-```
-visual-captioning/
-├── algorithms/             # Huấn luyện mô hình
-│
-│── crawling/               # Cào dữ liệu
-│
-└── application/            # Ứng dụng web
-    ├── backend/            # API và server backend
-    │   ├── app/            # Mã nguồn chính
-    │   ├── Dockerfile      # Cấu hình Docker
-    │   └── requirements.txt# Thư viện Python
-    │
-    └── frontend/           # Giao diện người dùng
-        ├── src/            # Mã nguồn React
-        ├── public/         # Tài nguyên tĩnh
-        ├── Dockerfile      # Cấu hình Docker
-        └── package.json    # Cấu hình npm
-```
-
 ## Yêu cầu hệ thống
 
 - Python 3.8+
