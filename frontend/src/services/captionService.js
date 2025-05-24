@@ -6,14 +6,13 @@ export async function generateCaption(file, token) {
     
     try {
         const result = {}
-        const response1 = await API.post('model/title', formData, {
+        const response1 = await API.post('model/caption', formData, {
             headers: { 
                 'Content-Type': 'multipart/form-data',
                 'Authorization': `Bearer ${token}`
             }
         })
-        const title = response1.data.title
-        result.title = title
+        result.caption = response1.data.caption
 
         const response2 = await API.post('model/label', formData, {
             headers: { 

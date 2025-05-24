@@ -45,7 +45,7 @@ class Classifier:
         return 'food' if predicted.item() == 1 else 'non-food'
     
 
-classifier = Classifier("/home/marknguyen/VSCodeProjects/vs-cap-app/models/classifier.pth")
+classifier = Classifier("/app/models/classifier.pth")
 
 
 def classify_image(image_bytes):

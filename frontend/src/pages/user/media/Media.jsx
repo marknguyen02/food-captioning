@@ -17,14 +17,16 @@ import Delete from './MediaDelete'
 import Caption from "./MediaCaption"
 import { fetchAllMediasOfAlbum } from "../../../services/mediaService"
 import { updateAlbum } from '../../../services/albumService'
+import { useSelector } from "react-redux"
 
 
 function Media() {
     const { albumId } = useParams()
+    const isDarkMode = useSelector((state) => state.app.mode) === 'dark'
     const [columns, setColumns] = useState(3)
     const [medias, setMedias] = useState([])
     const [filteredMedias, setFilteredMedias] = useState([])
-    const [isLoading, setIsLoading] = useState(false)
+    const [isLoading, setIsLoading] = useState(true)
     const [searchValue, setSearchValue] = useState('')
 
     const [activeSelect, setActiveSelect] = useState(false)
@@ -57,7 +59,6 @@ function Media() {
 
     useEffect(() => {
         const fetchData = async () => {
-            setIsLoading(true)
             try {
                 const data = await fetchAllMediasOfAlbum(albumId, localStorage.getItem('at'))
                 setMedias(data)
@@ -148,9 +149,23 @@ function Media() {
         )
     }
 
+    // Theme styles based on mode
+    const themeStyles = {
+        mainBg: isDarkMode ? 'bg-[#20262E]' : 'bg-gray-100',
+        cardBg: isDarkMode ? 'bg-[#10161d]' : 'bg-[#B6BBC4]',
+        textColor: isDarkMode ? 'text-white' : 'text-gray-800',
+        emptyText: isDarkMode ? 'text-white' : 'text-gray-600',
+        bottomBar: isDarkMode ? 'bg-slate-800 text-slate-200' : 'bg-white text-gray-700 shadow-md',
+        buttonHover: isDarkMode ? 'hover:text-yellow-400' : 'hover:text-blue-500',
+        buttonDangerHover: isDarkMode ? 'hover:text-rose-400' : 'hover:text-red-500',
+        searchBg: isDarkMode ? '' : 'bg-white',
+        cardShadow: isDarkMode ? '' : 'shadow-md',
+        cardBorder: isDarkMode ? '' : 'border border-gray-200',
+    }
+
     return (
         <div className='flex flex-col items-center w-full h-full relative'>
-            <div className='w-full max-w-[1860px] flex items-center gap-2.5 p-2'>
+            <div className={`w-full max-w-[1860px] flex items-center gap-2.5 p-2 ${isDarkMode ? '' : 'bg-gray-50'}`}>
                 <Input.Search
                     value={searchValue}
                     onChange={(e) => setSearchValue(e.target.value)}
@@ -159,6 +174,7 @@ function Media() {
                     enterButton
                     allowClear
                     style={{ width: '100%' }}
+                    className={themeStyles.searchBg}
                 />
 
                 <div 
@@ -172,12 +188,16 @@ function Media() {
                 </div>
             </div>
 
-            <div className={`w-full h-full max-w-[1860px] bg-[#20262E] p-2.5 overflow-auto ${activeSelect ? 'pb-[58px]' : ''}`}>
+            <div className={`w-full h-full max-w-[1860px] ${themeStyles.mainBg} p-2.5 overflow-auto ${activeSelect ? 'pb-[58px]' : ''}`}>
                 {filteredMedias.length > 0 ? (
                     <ImageList variant="masonry" cols={columns} gap={20}>
                         {filteredMedias.map(({media_id, media_url, media_name}) => (
                             <ImageListItem key={media_id}>
-                                <div className={`bg-[#10161d] p-2.5 rounded-2xl ${activeSelect ? 'cursor-pointer' : ''}`} onClick={() => handleClickMedia(media_id)}>                                
+                                <div 
+                                    className={`${themeStyles.cardBg} p-2.5 rounded-2xl ${activeSelect ? 'cursor-pointer' : ''} 
+                                              ${themeStyles.cardShadow} ${themeStyles.cardBorder} transition-all duration-300`} 
+                                    onClick={() => handleClickMedia(media_id)}
+                                >                                
                                     <LazyLoadImage 
                                         src={media_url}
                                         alt={media_name}
@@ -189,7 +209,10 @@ function Media() {
                                             textAlign: 'left',
                                             borderTopLeftRadius: '16px',
                                             borderTopRightRadius: '16px',
-                                            caretColor: 'transparent'
+                                            caretColor: 'transparent',
+                                            background: isDarkMode ? 
+                                                'linear-gradient(to top, rgba(0,0,0,0.7) 0%, rgba(0,0,0,0.3) 70%, rgba(0,0,0,0) 100%)' : 
+                                                'linear-gradient(to top, rgba(0,0,0,0.5) 0%, rgba(0,0,0,0.2) 70%, rgba(0,0,0,0) 100%)'
                                         }}
                                         title={<p className="caret-transparent">{media_name}</p>}
                                         position="top"
@@ -222,18 +245,18 @@ function Media() {
                 ) : (
                     <div className="flex flex-col items-center justify-center w-full h-64">
                         <Empty 
-                            description={<h2 className="text-white text-xl">Không tìm thấy dữ liệu</h2>}
+                            description={<h2 className={`${themeStyles.emptyText} text-xl`}>Không tìm thấy dữ liệu</h2>}
                             image={Empty.PRESENTED_IMAGE_SIMPLE} 
                         />
                     </div>
                 )}
             </div>
 
-            {activeSelect && <div className='absolute bottom-0 w-full h-[48px] bg-slate-800 flex items-center gap-8 justify-center text-slate-200'>
+            {activeSelect && <div className={`absolute bottom-0 w-full h-[48px] ${themeStyles.bottomBar} flex items-center gap-8 justify-center`}>
                 <button 
                     className={`
                         flex flex-col items-center gap-[3px] transition-colors duration-200 mt-[6px]
-                        ${selectedMedias.length != 1 ? '!cursor-default text-gray-500 opacity-50' : 'hover:text-yellow-400'
+                        ${selectedMedias.length != 1 ? '!cursor-default text-gray-500 opacity-50' : themeStyles.buttonHover
                         }`
                     }                    
                     disabled={selectedMedias.length != 1}
@@ -246,7 +269,7 @@ function Media() {
                 <button 
                     className={`
                         flex flex-col items-center gap-[3px] transition-colors duration-200 mt-[6px]
-                        ${selectedMedias.length != 1 ? '!cursor-default text-gray-500 opacity-50' : 'hover:text-yellow-400'
+                        ${selectedMedias.length != 1 ? '!cursor-default text-gray-500 opacity-50' : themeStyles.buttonHover
                         }`
                     }                    
                     disabled={selectedMedias.length != 1}
@@ -259,7 +282,7 @@ function Media() {
                 <button 
                     className={`
                         flex flex-col items-center gap-[3px] transition-colors duration-200 mt-[6px]
-                        ${selectedMedias.length == 0 ? '!cursor-default text-gray-500 opacity-50' : 'hover:text-rose-400'}`}
+                        ${selectedMedias.length == 0 ? '!cursor-default text-gray-500 opacity-50' : themeStyles.buttonDangerHover}`}
                     disabled={selectedMedias.length == 0}
                     onClick={() => setOpenDelete(true)}
                 >

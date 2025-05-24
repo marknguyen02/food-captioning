@@ -14,11 +14,11 @@ async def classify(file: UploadFile=File(...), user_id = Depends(get_current_use
     return {'label': result}
 
 
-@router.post('/title')
+@router.post('/caption')
 async def get_caption(file: UploadFile=File(...), user_id = Depends(get_current_user)):
     image_bytes = await file.read()
     caption = generate_caption(image_bytes)
-    return {"title": caption.capitalize() + '.'}
+    return {"caption": caption.capitalize()}
 
 
 @router.post('/recipe', response_model = RecipeResponse)

@@ -18,10 +18,13 @@ router = APIRouter()
 async def login(response: Response, form_data: OAuth2PasswordRequestForm=Depends(), db: AsyncIOMotorDatabase=Depends(get_mongo_db)):
     user = await db['users'].find_one({"username": form_data.username})
     if user is None:
-        raise HTTPException(status_code=400, detail="Invalid username or password")
+        raise HTTPException(status_code=400, detail="Invalid username or password.")
     
+    if user.get('locked'):
+        raise HTTPException(status_code=400, detail="Account has been locked.")
+
     if not verify_password(form_data.password, user['password']):
-        raise HTTPException(status_code=400, detail="Invalid username or password")
+        raise HTTPException(status_code=400, detail="Invalid username or password.")
     
     access_token = create_token({'sub': user['user_id']})
     refresh_token = create_token({'sub': user['user_id']}, typ='refresh')
@@ -52,6 +55,7 @@ async def signup(form_data: SignupRequest, db: AsyncIOMotorDatabase=Depends(get_
         "email": form_data.email,
         "fullname": form_data.fullname,
         "role": "user",
+        'locked': False
     }
     await db['users'].insert_one(user)
 

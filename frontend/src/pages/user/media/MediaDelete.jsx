@@ -1,8 +1,11 @@
 import { deleteMedias } from "../../../services/mediaService"
 import { Modal, message } from "antd"
 import { useState } from "react"
+import { useSelector } from "react-redux"
 
 const Delete = ({ openDelete, setOpenDelete, selectedMedias, onSuccess }) => {
+    const isDarkMode = useSelector((state) => state.app.mode) === 'dark'
+    
     const [isLoading, setIsLoading] = useState(false)
 
     const handleDeleteMedias = async () => {
@@ -21,31 +24,34 @@ const Delete = ({ openDelete, setOpenDelete, selectedMedias, onSuccess }) => {
     }
 
     const modalStyles = `
-        .custom-modal .ant-modal-content {
-            background-color: #1e293b;
-            color: #f8fafc;
+        .media-delete-model .ant-modal-content {
+            background-color: ${isDarkMode ? '#1e293b' : '#ffffff'};
+            color: ${isDarkMode ? '#f8fafc' : '#1e293b'};
         }
-        .custom-modal .ant-modal-header {
-            background-color: #1e293b;
+        .media-delete-model .ant-modal-header {
+            background-color: ${isDarkMode ? '#1e293b' : '#ffffff'};
             border-bottom: none !important;
         }
-        .custom-modal .ant-modal-footer {
-            background-color: #1e293b;
+        .media-delete-model .ant-modal-footer {
+            background-color: ${isDarkMode ? '#1e293b' : '#ffffff'};
             border: none !important;
         }
-        .custom-modal .ant-rate-star:not(.ant-rate-star-full) .ant-rate-star-first,
-        .custom-modal .ant-rate-star:not(.ant-rate-star-full) .ant-rate-star-second {
-            color: #475569;
+        .media-delete-model .ant-rate-star:not(.ant-rate-star-full) .ant-rate-star-first,
+        .media-delete-model .ant-rate-star:not(.ant-rate-star-full) .ant-rate-star-second {
+            color: ${isDarkMode ? '#475569' : '#cbd5e1'};
         }
-        .custom-modal .ant-rate-star-full .ant-rate-star-first,
-        .custom-modal .ant-rate-star-full .ant-rate-star-second {
+        .media-delete-model .ant-rate-star-full .ant-rate-star-first,
+        .media-delete-model .ant-rate-star-full .ant-rate-star-second {
             color: #fbbf24;
         }
-
-        .custom-modal .ant-modal-close {
+        .media-delete-model .ant-modal-close {
             display: none !important;
         }
     `
+
+    const titleGradient = isDarkMode 
+        ? 'bg-gradient-to-r from-cyan-400 to-purple-400' 
+        : 'bg-gradient-to-r from-blue-600 to-purple-600';
 
     return (
         <>
@@ -59,10 +65,10 @@ const Delete = ({ openDelete, setOpenDelete, selectedMedias, onSuccess }) => {
                 okType="danger"
                 cancelText="Cancel"
                 centered
-                title={<h2 className="text-xl font-semibold bg-clip-text text-transparent bg-gradient-to-r from-cyan-400 to-purple-400 mb-4">
+                title={<h2 className={`text-xl font-semibold bg-clip-text text-transparent ${titleGradient} mb-4`}>
                     Delete Media
                 </h2>}
-                className="custom-modal"
+                className="media-delete-model"
             >
                 <p>
                     Are you sure you want to delete{" "}

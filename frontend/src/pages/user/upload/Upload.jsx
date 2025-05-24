@@ -14,7 +14,8 @@ import {
 } from '@ant-design/icons'
 import { generateCaption } from '../../../services/captionService'
 import SaveDrawer from './SaveDrawer'
-import RateModal from './RateModal'
+import RateModal from './RateModal';
+import { useSelector } from 'react-redux'
 
 const SAMPLE_IMAGES = [
 	"https://upload.wikimedia.org/wikipedia/commons/1/19/B%C3%A1nh_m%C3%AC.jpg",
@@ -25,10 +26,12 @@ const SAMPLE_IMAGES = [
 ]
 
 function Upload() {
+	const isDarkMode = useSelector((state) => state.app.mode) === 'dark';
+
 	const [currentFile, setCurrentFile] = useState()
 	const [preview, setPreview] = useState()
 	
-	const [caption, setCaption] = useState({label: '', title: '', ingredients: [], instructions: []})
+	const [caption, setCaption] = useState({label: '', caption: '', ingredients: [], instructions: []})
 	const [isLoading, setIsLoading] = useState(false)
 	
 	const [openSaveCard, setOpenSaveCard] = useState(false)
@@ -43,7 +46,6 @@ function Upload() {
 			message.error('Please upload only image files!')
 			return false
 		}
-		
 		URL.revokeObjectURL(preview)
 		setPreview(URL.createObjectURL(file))
 		setCurrentFile(file)
@@ -69,9 +71,9 @@ function Upload() {
 				setCaption(captionResponse);
 			} catch (error) {
 				message.error("Failed to generate caption.")
-				console.err(error.message);
+				console.error(error.message);
 			} finally {
-				setIsLoading(false)
+				setIsLoading(false);
 			}
 			return
 		} else {
@@ -105,20 +107,20 @@ function Upload() {
 	}
 
 	return (
-		<div className="flex flex-col gap-5 w-full h-full items-center overflow-auto py-5 not-md:px-[10px]">
+		<div className={`flex flex-col gap-5 w-full h-full items-center overflow-auto py-5 not-md:px-[10px]`}>
 			<h1 className="text-4xl font-extrabold text-center bg-clip-text text-transparent bg-gradient-to-r from-cyan-400 to-purple-400 mb-2.5 hidden md:block">
 				Caption Generator
 			</h1>
 
-			{!preview && <div className="flex not-md:hidden justify-center gap-4">
+			{!preview && <div className="flex not-md:hidden justify-center gap-4 ">
 				{SAMPLE_IMAGES.map((img, index) => (
 					<Tooltip key={index} title="Select sample image">
 						<img 
 						src={img} 
 						alt={`Sample ${index + 1}`} 
-						className="w-24 h-24 object-cover rounded-xl cursor-pointer transition-all duration-300 
+						className={`w-24 h-24 object-cover rounded-xl cursor-pointer transition-all duration-300 
 							hover:scale-110 hover:shadow-2xl hover:rotate-6 
-							border-2 border-transparent hover:border-cyan-400"
+							border-2 border-transparent ${isDarkMode ? 'hover:border-cyan-400' : 'hover:border-cyan-600'}`}
 						onClick={() => handleSampleImageSelect(img)}
 						/>
 					</Tooltip>
@@ -132,11 +134,21 @@ function Upload() {
 					showUploadList={false}
 					accept="image/*"
 					beforeUpload={handleFileUpload}
-					className="order-dashed border-gray-500 bg-gray-800 hover:bg-gray-700 hover:border-cyan-500 transition-all duration-300 group"
+					className={`border-dashed transition-all duration-300 group ${
+						isDarkMode 
+							? 'border-gray-500 bg-gray-800 hover:bg-gray-700 hover:border-cyan-500' 
+							: 'border-gray-300 bg-white hover:bg-gray-50 hover:border-cyan-500'
+					}`}
 				>
-					<div className="absolute inset-0 bg-gradient-to-r from-cyan-900 to-purple-900 opacity-0 group-hover:opacity-20 transition-opacity duration-500"></div>
-					<p className="text-cyan-400 md:text-4xl text-xl mb-4 relative z-10"><UploadOutlined /></p>
-					<p className="not-md:hidden text-lg font-semibold text-gray-300 relative z-10">
+					<div className={`absolute inset-0 bg-gradient-to-r ${
+						isDarkMode 
+							? 'from-cyan-900 to-purple-900' 
+							: 'from-cyan-100 to-purple-100'
+					} opacity-0 group-hover:opacity-20 transition-opacity duration-500`}></div>
+					<p className={`${isDarkMode ? 'text-cyan-400' : 'text-cyan-600'} md:text-4xl text-xl mb-4 relative z-10`}>
+						<UploadOutlined />
+					</p>
+					<p className={`not-md:hidden text-lg font-semibold ${isDarkMode ? 'text-gray-300' : 'text-gray-600'} relative z-10`}>
 						Drag & drop an image or click to select
 					</p>
 				</UploadAntd.Dragger>
@@ -151,7 +163,7 @@ function Upload() {
 						className="md:max-w-[800px] max-h-[450px] object-cover rounded-xl shadow-lg" 
 					/>
 					<button
-						className="absolute top-5 right-5 md:top-0 md:right-0 bg-yellow-50 text-red-400 rounded-full px-1 p-0.5 hover:scale-110 transition-transform duration-200"
+						className={`absolute top-5 right-5 md:top-0 md:right-0 ${isDarkMode ? 'bg-yellow-50' : 'bg-slate-600'} ${ isDarkMode ? 'text-red-400' : 'text-white'} rounded-full px-1 p-0.5 hover:scale-110 transition-transform duration-200`}
 						onClick={handleCloseImage}
 					>
 						<CloseOutlined className="text-base" />
@@ -159,10 +171,14 @@ function Upload() {
 				</div>
 			)}
 
-			{!caption.title && <div className="flex justify-center">
+			{!caption.caption && <div className="flex justify-center">
 				<Button 
-					className="!bg-gradient-to-r from-cyan-600 to-purple-600 !text-white !font-bold !py-2 !px-6 !rounded-full 
-						!shadow-lg !hover:shadow-2xl !transform hover:-translate-y-1 !transition-all !duration-300"
+					className={`!bg-gradient-to-r ${
+						isDarkMode 
+							? 'from-cyan-600 to-purple-600' 
+							: 'from-cyan-500 to-purple-500'
+					} !text-white !font-bold !py-2 !px-6 !rounded-full 
+						!shadow-lg !hover:shadow-2xl !transform hover:-translate-y-1 !transition-all !duration-300`}
 					onClick={handleGenerateCaption}
 					loading={isLoading}
 				>
@@ -170,18 +186,26 @@ function Upload() {
 				</Button>
 			</div>}
 
-			{caption.title && <div className="w-full max-w-4xl bg-gray-900 rounded-xl p-6 shadow-xl border border-gray-800 not-md:p-3">
+			{caption.caption && <div className={`w-full max-w-4xl rounded-xl p-6 shadow-xl border not-md:p-3 ${
+				isDarkMode 
+					? 'bg-gray-900 border-gray-800' 
+					: 'bg-white border-gray-200'
+			}`}>
 				<div className="mb-6 not-md:mb-2.5 rounded-lg overflow-hidden text-left">
-					<div className="p-4 not-md:px-3 bg-slate-800 ">
-						<h3 className="text-[22px] not-md:text-[18px] font-bold text-pink-300">Caption</h3>
+					<div className={`p-4 not-md:px-3 ${isDarkMode ? 'bg-slate-800' : 'bg-slate-100'}`}>
+						<h3 className="text-[22px] not-md:text-[18px] font-bold text-pink-500">Caption</h3>
 					</div>
-					<div className="bg-gray-800 px-4 rounded-b-lg not-md:px-3">
-						<p className="text-gray-200 text-lg not-md:text-[16px] font-medium break-all text-left">{caption.title}</p>
+					<div className={`px-4 rounded-b-lg not-md:px-3 ${isDarkMode ? 'bg-gray-800' : 'bg-gray-50'}`}>
+						<p className={`text-lg not-md:text-[16px] font-medium break-all text-left ${
+							isDarkMode ? 'text-gray-200' : 'text-gray-700'
+						}`}>{caption.caption}</p>
 						<div className="flex justify-end mt-2 pb-4">
 							<Tooltip title="Copy Title">
 								<button 
-								className="text-pink-300 hover:text-pink-400 transition-colors duration-300 transform hover:scale-125 text-[18px] not-md:text-[16px]"
-								onClick={() => handleCopy(caption.title)}
+								className={`transition-colors duration-300 transform hover:scale-125 text-[18px] not-md:text-[16px] ${
+									isDarkMode ? 'text-pink-300 hover:text-pink-400' : 'text-pink-500 hover:text-pink-600'
+								}`}
+								onClick={() => handleCopy(caption.caption)}
 								>
 								<CopyOutlined />
 								</button>
@@ -192,15 +216,17 @@ function Upload() {
 
 
 				{caption?.name && <div className="mb-6 not-md:mb-2.5 rounded-lg overflow-hidden text-left">
-					<div className="p-4 not-md:px-3 bg-slate-800 ">
-						<h3 className="text-[22px] not-md:text-[18px] font-bold text-cyan-400">Name</h3>
+					<div className={`p-4 not-md:px-3 ${isDarkMode ? 'bg-slate-800' : 'bg-slate-100'}`}>
+						<h3 className="text-[22px] not-md:text-[18px] font-bold text-cyan-500">Name</h3>
 					</div>
-					<div className="bg-gray-800 px-4 rounded-b-lg not-md:px-3">
-						<p className="text-gray-200 text-lg not-md:text-[16px] font-medium break-all text-left">{caption.name}</p>
+					<div className={`px-4 rounded-b-lg not-md:px-3 ${isDarkMode ? 'bg-gray-800' : 'bg-gray-50'}`}>
+						<p className={`text-lg not-md:text-[16px] font-medium break-all text-left ${
+							isDarkMode ? 'text-gray-200' : 'text-gray-700'
+						}`}>{caption.name}</p>
 						<div className="flex justify-end mt-2 pb-4">
 							<Tooltip title="Copy Title">
 								<button 
-								className="text-pink-300 hover:text-pink-400 transition-colors duration-300 transform hover:scale-125 text-[18px] not-md:text-[16px]"
+								className={`transition-colors duration-300 transform hover:scale-125 text-[18px] not-md:text-[16px] text-blue-400 hover:text-blue-500`}
 								onClick={() => handleCopy(caption.name)}
 								>
 								<CopyOutlined />
@@ -213,19 +239,23 @@ function Upload() {
 
 				{caption.ingredients.length > 0 && 
 				<div className="mb-6 not-md:mb-2.5 rounded-lg overflow-hidden text-left">
-					<div className="p-4 bg-slate-800">
-						<h3 className="text-[22px] not-md:text-[18px] font-bold text-teal-400">Ingredients</h3>
+					<div className={`p-4 ${isDarkMode ? 'bg-slate-800' : 'bg-slate-100'}`}>
+						<h3 className="text-[22px] not-md:text-[18px] font-bold text-teal-500">Ingredients</h3>
 					</div>
-					<div className="bg-gray-800 px-4 not-md:px-3 rounded-b-lg text-left">
-						<ul className="list-disc list-inside space-y-1 text-amber-300 text-lg not-md:text-[14px]">  
+					<div className={`px-4 not-md:px-3 rounded-b-lg text-left ${isDarkMode ? 'bg-gray-800' : 'bg-gray-50'}`}>
+						<ul className={`list-disc list-inside space-y-1 text-lg not-md:text-[14px] ${
+							isDarkMode ? 'text-amber-300' : 'text-amber-600'
+						}`}>  
 							{caption.ingredients.map((item, idx) => (
-								<li key={idx} className="text-slate-200">{item}</li>
+								<li key={idx} className={isDarkMode ? 'text-slate-200' : 'text-slate-700'}>{item}</li>
 							))}
 						</ul>            
 						<div className="flex justify-end mt-2 pb-4">
 							<Tooltip title="Copy Ingredients">
 							<button 
-								className="text-emerald-400 hover:text-emerald-300 transition-colors duration-300 transform hover:scale-125 text-[18px] not-md:text-[16px]"
+								className={`transition-colors duration-300 transform hover:scale-125 text-[18px] not-md:text-[16px] ${
+									isDarkMode ? 'text-emerald-400 hover:text-emerald-300' : 'text-emerald-600 hover:text-emerald-500'
+								}`}
 								onClick={() => handleCopy(caption.ingredients.join(', '))}
 							>
 								<CopyOutlined />
@@ -238,19 +268,21 @@ function Upload() {
 
 				{caption.instructions.length > 0 && 
 					<div className="mb-6 rounded-lg overflow-hidden text-left">
-						<div className="p-4 bg-slate-800">
-							<h3 className="text-[22px] not-md:text-[18px] font-bold text-purple-300">Instructions</h3>
+						<div className={`p-4 ${isDarkMode ? 'bg-slate-800' : 'bg-slate-100'}`}>
+							<h3 className="text-[22px] not-md:text-[18px] font-bold text-purple-500">Instructions</h3>
 						</div>
-						<div className="bg-gray-800 px-4 not-md:px-3 rounded-b-lg">
+						<div className={`px-4 not-md:px-3 rounded-b-lg ${isDarkMode ? 'bg-gray-800' : 'bg-gray-50'}`}>
 							<ol className="list-decimal list-inside space-y-2 text-lg not-md:text-[14px]">
 								{caption.instructions.map((step, idx) => (
-									<li key={idx} className="text-slate-200">{step}</li>
+									<li key={idx} className={isDarkMode ? 'text-slate-200' : 'text-slate-700'}>{step}</li>
 								))}
 							</ol>
 							<div className="flex justify-end mt-2 pb-4">
 								<Tooltip title="Copy Instructions">
 								<button 
-									className="text-purple-400 hover:text-purple-300 transition-colors duration-300 transform hover:scale-125 text-[18px] not-md:text-[16px]"
+									className={`transition-colors duration-300 transform hover:scale-125 text-[18px] not-md:text-[16px] ${
+										isDarkMode ? 'text-purple-400 hover:text-purple-300' : 'text-purple-600 hover:text-purple-500'
+									}`}
 									onClick={() => handleCopy(caption.instructions.join('\n'))}
 								>
 									<CopyOutlined />
@@ -264,10 +296,14 @@ function Upload() {
 				<div className='flex justify-center gap-8 md:mt-4'>
 					<Tooltip title="Save">
 						<button 
-							className="flex flex-col items-center text-blue-400 hover:text-blue-300 transition-all duration-300 transform hover:scale-110"
+							className={`flex flex-col items-center transition-all duration-300 transform hover:scale-110 ${
+								isDarkMode ? 'text-blue-400 hover:text-blue-300' : 'text-blue-600 hover:text-blue-500'
+							}`}
 							onClick={handleOpenSaveDrawer}
 						>
-							<div className="bg-blue-900 p-2 not-md:px-1.5 not-md:py-1 rounded-full mb-1">
+							<div className={`p-2 not-md:px-1.5 not-md:py-1 rounded-full mb-1 ${
+								isDarkMode ? 'bg-blue-900' : 'bg-blue-100'
+							}`}>
 								<SaveOutlined className="text-xl not-md:text-[12px]" />
 							</div>
 							<span className="text-xs">Save</span>
@@ -276,10 +312,14 @@ function Upload() {
 					
 					<Tooltip title="Rate">
 						<button 
-							className="flex flex-col items-center text-yellow-400 hover:text-yellow-300 transition-all duration-300 transform hover:scale-110"
+							className={`flex flex-col items-center transition-all duration-300 transform hover:scale-110 ${
+								isDarkMode ? 'text-yellow-400 hover:text-yellow-300' : 'text-yellow-600 hover:text-yellow-500'
+							}`}
 							onClick={openRateModal}
 						>
-							<div className="bg-yellow-900 p-2 not-md:px-1.5 not-md:py-1 rounded-full mb-1">
+							<div className={`p-2 not-md:px-1.5 not-md:py-1 rounded-full mb-1 ${
+								isDarkMode ? 'bg-yellow-900' : 'bg-yellow-100'
+							}`}>
 								<StarOutlined className="text-xl not-md:text-[12px]" />
 							</div>
 							<span className="text-xs">Rate</span>

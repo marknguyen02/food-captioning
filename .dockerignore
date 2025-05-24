@@ -1,48 +1,32 @@
-# Bytecode files
 __pycache__/
 *.pyc
 *.pyo
 
-# Virtual environments
 .venv/
-env/
-venv/
 
-# Editor/IDE config
 .vscode/
 .idea/
 *.swp
 
-# OS-specific
 .DS_Store
 Thumbs.db
 
-# Git
 .git
 .gitignore
 
-# Node modules (nếu có frontend)
 **/node_modules
 
-# Cache & logs
 *.log
 *.cache/
 .cache/
 pip-log.txt
 
-# Test files
 tests/
 *.test.py
 
-# Build artifacts
 build/
 dist/
 *.egg-info/
 
-# Frontend build output (nếu không cần trong backend image)
 frontend/dist/
 frontend/.vite/
-
-# Docker
-Dockerfile
-docker-compose.yml

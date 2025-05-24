@@ -5,6 +5,7 @@ import Album from '../pages/user/album/Album';
 import Media from '../pages/user/media/Media';
 import Dashboard from '../pages/user/Dashboard';
 import Support from '../pages/user/Support';
+import EmptyState from '../components/EmptyState'
 
 
 function UserRoutes() {
@@ -13,13 +14,13 @@ function UserRoutes() {
             <Route path='/' element={<UserLayout />}>
                 <Route index element={<Upload />} />
                 <Route path='/upload' element={<Upload />} />
-                <Route path='/history' element={<History />} />
                 <Route path='/album' element={<Album />} />
                 <Route path='/album/:albumId' element={<Media />} />
                 <Route path='/dashboard' element={<Dashboard />} />
                 <Route path='/support' element={<Support />} />
                 <Route path='/login' element={<Navigate to='/' />} />
                 <Route path='/signup' element={<Navigate to='/' />} />
+                <Route path='/*' element={<EmptyState />} />
             </Route>
         </Routes>
     );

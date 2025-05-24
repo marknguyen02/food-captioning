@@ -4,7 +4,7 @@ from botocore.client import BaseClient
 from app.core.dependencies import get_s3_client
 from app.core.config import config
 from app.core.dependencies import get_current_user, get_mongo_db
-from app.schemas.album import AlbumCreate, AlbumResponse, AlbumUpdate, AlbumDelete, AlbumCount
+from app.schemas.album import AlbumCreate, AlbumResponse, AlbumUpdate, AlbumDelete, AlbumCount, AlbumStorage
 from app.utils.s3 import generate_presigned_url
 from uuid import uuid4
 from datetime import datetime
@@ -159,4 +159,46 @@ async def count_media_album(
     albums = await db['albums'].aggregate(pipeline).to_list(length=None)
     return [AlbumCount(**album) for album in albums]
 
+
+@router.get('/storage', response_model=list[AlbumStorage])
+async def compute_size_album(
+    user_id: str = Depends(get_current_user),
+    db: AsyncIOMotorDatabase = Depends(get_mongo_db),
+    s3_client: BaseClient = Depends(get_s3_client)
+):
+    media_docs = await db['medias'].find({'user_id': user_id}).to_list(length=None)
+
+    album_sizes = {}
+
+    for media in media_docs:
+        album_id = media.get('album_id')
+        media_url = media.get('media_url')
+
+        if not album_id or not media_url:
+            continue
+
+        try:
+            response = s3_client.head_object(Bucket=config.BUCKET_NAME, Key=media.get('media_url'))
+            size_bytes = response.get('ContentLength', 0)
+            size_gb = round(size_bytes / (1024 ** 3), 3)
+            album_sizes[album_id] = album_sizes.get(album_id, 0) + size_gb
+
+        except Exception as e:
+            print(f"Error retrieving size for {media_url}: {e}")
+
+    album_ids = list(album_sizes.keys())
+    album_docs = await db['albums'].find({'album_id': {'$in': album_ids}}).to_list(length=None)
+
+    album_names = {doc['album_id']: doc.get('album_name', '') for doc in album_docs}
+
+    result = [
+        AlbumStorage(
+            album_id=album_id,
+            size=album_sizes[album_id],
+            album_name=album_names.get(album_id, '')
+        )
+        for album_id in album_sizes
+    ]
+
+    return result
 

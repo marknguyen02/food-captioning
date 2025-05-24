@@ -1,16 +1,13 @@
 import { updateMedia } from "../../../services/mediaService"
 import { Modal, Form, message, Input, Button } from 'antd'
 import { useState } from "react"
+import { useSelector } from "react-redux"
 
-
-const Rename = ({
-    openRename,
-    setOpenRename,
-    selectedMedias,
-    onSuccess
-}) => {
+const Rename = ({ openRename, setOpenRename, selectedMedias, onSuccess }) => {
+    const isDarkMode = useSelector((state) => state.app.mode) === 'dark'
     const [form] = Form.useForm();
     const [isLoading, setIsLoading] = useState(false)
+    
     const handleRename = async (formData) => {
         try {
             setIsLoading(true)
@@ -35,31 +32,51 @@ const Rename = ({
             setIsLoading(false)
         }
     }
+    
     const modalStyles = `
-        .custom-modal .ant-modal-content {
-            background-color: #1e293b;
-            color: #f8fafc;
+        .media-rename-model .ant-modal-content {
+            background-color: ${isDarkMode ? '#1e293b' : '#ffffff'};
+            color: ${isDarkMode ? '#f8fafc' : '#1e293b'};
         }
-        .custom-modal .ant-modal-header {
-            background-color: #1e293b;
-            border-bottom: 1px solid #334155;
+        .media-rename-model .ant-modal-header {
+            background-color: ${isDarkMode ? '#1e293b' : '#ffffff'};
+            border-bottom: 1px solid ${isDarkMode ? '#334155' : '#e2e8f0'};
         }
-        .custom-modal .ant-modal-footer {
-            background-color: #1e293b;
-            border-top: 1px solid #334155;
+        .media-rename-model .ant-modal-footer {
+            background-color: ${isDarkMode ? '#1e293b' : '#ffffff'};
+            border-top: 1px solid ${isDarkMode ? '#334155' : '#e2e8f0'};
         }
-        .custom-modal .ant-modal-close-x {
-            
+        .media-rename-model .ant-modal-close-x {
+            color: ${isDarkMode ? '#e2e8f0' : '#64748b'};
         }
-        .custom-modal .ant-rate-star:not(.ant-rate-star-full) .ant-rate-star-first,
-        .custom-modal .ant-rate-star:not(.ant-rate-star-full) .ant-rate-star-second {
-            color: #475569;
+        .media-rename-model .ant-rate-star:not(.ant-rate-star-full) .ant-rate-star-first,
+        .media-rename-model .ant-rate-star:not(.ant-rate-star-full) .ant-rate-star-second {
+            color: ${isDarkMode ? '#475569' : '#cbd5e1'};
         }
-        .custom-modal .ant-rate-star-full .ant-rate-star-first,
-        .custom-modal .ant-rate-star-full .ant-rate-star-second {
+        .media-rename-model .ant-rate-star-full .ant-rate-star-first,
+        .media-rename-model .ant-rate-star-full .ant-rate-star-second {
             color: #fbbf24;
         }
+        .media-rename-model .ant-input {
+            background-color: ${isDarkMode ? '#374151' : '#ffffff'};
+            border-color: ${isDarkMode ? '#4b5563' : '#d1d5db'};
+            color: ${isDarkMode ? '#f9fafb' : '#111827'};
+        }
+        .media-rename-model .ant-input:hover {
+            border-color: ${isDarkMode ? '#6b7280' : '#9ca3af'};
+        }
+        .media-rename-model .ant-input:focus {
+            border-color: ${isDarkMode ? '#3b82f6' : '#3b82f6'};
+            box-shadow: 0 0 0 2px ${isDarkMode ? 'rgba(59, 130, 246, 0.2)' : 'rgba(59, 130, 246, 0.2)'};
+        }
+        .media-rename-model .ant-form-item-explain-error {
+            color: ${isDarkMode ? '#fca5a5' : '#dc2626'};
+        }
     `
+
+    const titleGradient = isDarkMode 
+        ? 'bg-gradient-to-r from-cyan-400 to-purple-400' 
+        : 'bg-gradient-to-r from-blue-600 to-purple-600';
 
     return (
         <>
@@ -73,9 +90,9 @@ const Rename = ({
                 footer={null}
                 centered
                 width={500}
-                className="custom-modal"
+                className="media-rename-model"
             >
-                <h2 className="text-center text-xl font-semibold bg-clip-text text-transparent bg-gradient-to-r from-cyan-400 to-purple-400 mb-4">
+                <h2 className={`text-center text-xl font-semibold bg-clip-text text-transparent ${titleGradient} mb-4`}>
                     Rename Media
                 </h2>
                 
@@ -104,7 +121,6 @@ const Rename = ({
                             type="primary"
                             htmlType="submit"
                             loading={isLoading}
-                            disabled={isLoading}
                             className="!bg-[#3A59D1]"
                         >
                             Rename
@@ -115,6 +131,5 @@ const Rename = ({
         </>
     )
 }
-
 
 export default Rename

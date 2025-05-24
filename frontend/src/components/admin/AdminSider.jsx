@@ -31,13 +31,7 @@ function Sider({ isSiderCollapsed }) {
             icon: <FontAwesomeIcon icon={faComments} />,
             label: "Feedback",
             onClick: () => navigate('/feedback'),
-        },
-        {
-            key: "system",
-            icon: <FontAwesomeIcon icon={faGear} />,
-            label: "System",
-            onClick: () => navigate('/system'),
-        },
+        }
     ];
 
     return (

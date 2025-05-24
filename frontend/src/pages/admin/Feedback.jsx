@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react'
 import {
     Card,
     Avatar,
@@ -6,256 +6,309 @@ import {
     Typography,
     Row,
     Col,
-    Image,
     Empty,
     Space,
     Statistic,
     Progress,
     Tooltip,
-    Button,
-    Select
+    Select,
+    Skeleton
 } from 'antd';
 import {
     CalendarOutlined,
     StarFilled,
-    ExpandAltOutlined,
-    PictureOutlined
-} from '@ant-design/icons';
+} from '@ant-design/icons'
+import { fetchFeedBacks } from '../../services/adminService'
 
 const { Title, Text, Paragraph } = Typography;
 const { Option } = Select;
 
-// Theme configuration
 const THEME = {
-    primary: '#1890ff',
-    secondary: '#52c41a',
-    warning: '#faad14',
-    error: '#f5222d',
+    primary: '#2563eb',
+    secondary: '#10b981',
+    warning: '#f59e0b',
+    error: '#ef4444',
+    purple: '#8b5cf6',
+    indigo: '#6366f1',
+    teal: '#14b8a6',
     text: {
-        primary: '#262626',
-        secondary: '#595959',
-        light: '#8c8c8c'
+        primary: '#1f2937',
+        secondary: '#4b5563',
+        light: '#6b7280'
     },
     border: {
-        light: '#eaeaea',
-        highlight: '#91d5ff'
+        light: '#e5e7eb',
+        highlight: '#dbeafe'
     },
     background: {
         base: '#ffffff',
-        light: '#f5f5f5'
+        light: '#f8fafc',
+        gradient: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+        card: 'linear-gradient(135deg, #ffffff 0%, #f8fafc 100%)'
     },
     shadows: {
-        small: '0 2px 8px rgba(0,0,0,0.1)',
-        medium: '0 4px 12px rgba(0,0,0,0.1)',
-        large: '0 6px 16px rgba(0,0,0,0.08)'
+        small: '0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06)',
+        medium: '0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06)',
+        large: '0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05)',
+        xl: '0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04)'
     },
     borderRadius: {
         small: '8px',
         medium: '12px',
-        large: '16px'
+        large: '16px',
+        xl: '20px'
     }
 };
 
-// Helper Functions
 const stringToColor = (string) => {
+    if (!string) return THEME.primary;
     let hash = 0;
     for (let i = 0; i < string.length; i++) {
         hash = string.charCodeAt(i) + ((hash << 5) - hash);
     }
-    let color = '#';
-    for (let i = 0; i < 3; i++) {
-        let value = (hash >> (i * 8)) & 0xFF;
-        color += ('00' + value.toString(16)).substr(-2);
-    }
-    return color;
+    const colors = [THEME.primary, THEME.secondary, THEME.purple, THEME.indigo, THEME.teal];
+    return colors[Math.abs(hash) % colors.length];
 };
 
 const getRelativeTime = (dateString) => {
-    const date = new Date(dateString.split(' ')[0].split('/').reverse().join('-'));
-    const now = new Date();
-    const diffDays = Math.floor((now - date) / (1000 * 60 * 60 * 24));
+    if (!dateString) return 'Unknown';
+    
+    try {
+        let date;
+        if (dateString.includes('/')) {
+            const parts = dateString.split(' ')[0].split('/');
+            if (parts.length === 3) {
+                date = new Date(`${parts[2]}-${parts[1]}-${parts[0]}`);
+            }
+        } else {
+            date = new Date(dateString);
+        }
+        
+        if (isNaN(date.getTime())) return 'Invalid date';
+        
+        const now = new Date();
+        const diffDays = Math.floor((now - date) / (1000 * 60 * 60 * 24));
 
-    if (diffDays === 0) return "Today";
-    if (diffDays === 1) return "Yesterday";
-    if (diffDays < 7) return `${diffDays} days ago`;
-    if (diffDays < 30) return `${Math.floor(diffDays / 7)} weeks ago`;
-    return `${Math.floor(diffDays / 30)} months ago`;
+        if (diffDays === 0) return "Today";
+        if (diffDays === 1) return "Yesterday";
+        if (diffDays < 7) return `${-diffDays} days ago`;
+        if (diffDays < 30) return `${-Math.floor(diffDays / 7)} weeks ago`;
+        return `${Math.floor(-diffDays / 30)} months ago`;
+    } catch (error) {
+        console.error('Date parsing error:', error);
+        return 'Unknown';
+    }
 };
 
-// Enhanced Image Component
-const EnhancedImage = ({ src, alt }) => {
-    const [hovered, setHovered] = useState(false);
-
-    return (
-        <div
-            className="image-container"
-            style={{
-                position: 'relative',
-                overflow: 'hidden',
-                borderRadius: THEME.borderRadius.medium,
-                boxShadow: THEME.shadows.medium,
-                transition: 'all 0.3s ease'
-            }}
-            onMouseEnter={() => setHovered(true)}
-            onMouseLeave={() => setHovered(false)}
-        >
-            <Image
-                src={src}
-                alt={alt}
-                style={{
-                    width: '100%',
-                    height: 'auto',
-                    transition: 'transform 0.5s ease',
-                    transform: hovered ? 'scale(1.05)' : 'scale(1)'
-                }}
-                preview={false}
-                placeholder={
-                    <div 
-                        style={{
-                            background: 'linear-gradient(to right, #f0f2f5, #e6e9ec, #f0f2f5)',
-                            height: '250px',
-                            display: 'flex',
-                            alignItems: 'center',
-                            justifyContent: 'center',
-                            backgroundSize: '200% 100%',
-                            animation: 'pulse 1.5s infinite'
-                        }}
-                    >
-                        <PictureOutlined style={{ fontSize: '32px', color: '#d9d9d9' }} />
-                    </div>
-                }
-            />
-            {hovered && (
-                <div 
-                    className="image-overlay" 
-                    style={{
-                        position: 'absolute',
-                        top: 0,
-                        left: 0,
-                        right: 0,
-                        bottom: 0,
-                        background: 'rgba(0,0,0,0.4)',
-                        display: 'flex',
-                        alignItems: 'center',
-                        justifyContent: 'center',
-                        opacity: 1,
-                        transition: 'opacity 0.3s ease'
-                    }}
-                >
-                    <Button 
-                        type="primary" 
-                        icon={<ExpandAltOutlined />} 
-                        shape="circle" 
-                        size="large"
-                        className="zoom-in-out"
-                        style={{
-                            animation: 'pulse 1.5s infinite'
-                        }}
-                    />
-                </div>
-            )}
-        </div>
-    );
-};
-
-// Feedback Card Component
 const FeedbackCard = ({ feedback }) => {
+    if (!feedback) return null;
+
+    const userColor = stringToColor(feedback.username);
+
     return (
         <Card
             style={{
                 marginBottom: '24px',
-                borderRadius: THEME.borderRadius.medium,
+                borderRadius: THEME.borderRadius.large,
                 overflow: 'hidden',
                 boxShadow: THEME.shadows.medium,
                 transform: 'translateY(0)',
-                transition: 'all 0.3s ease',
-                border: '1px solid rgba(0,0,0,0.05)'
+                transition: 'all 0.4s cubic-bezier(0.4, 0, 0.2, 1)',
+                border: '1px solid rgba(37, 99, 235, 0.08)',
+                background: 'linear-gradient(135deg, #ffffff 0%, #fefefe 100%)',
+                position: 'relative'
             }}
             className="feedback-card-hover"
             hoverable
         >
+            {/* Decorative gradient border */}
+            <div 
+                style={{
+                    position: 'absolute',
+                    top: 0,
+                    left: 0,
+                    right: 0,
+                    height: '4px',
+                    background: `linear-gradient(90deg, ${userColor}, ${THEME.secondary})`,
+                    borderRadius: '16px 16px 0 0'
+                }}
+            />
+
             <Row
                 gutter={16}
                 align="middle"
                 style={{
-                    padding: '16px',
+                    padding: '20px 24px 16px',
                     marginBottom: '16px',
-                    backgroundColor: THEME.background.base
                 }}
             >
                 <Col>
-                    <Avatar
-                        size={55}
-                        style={{
-                            backgroundColor: stringToColor(feedback.username),
-                            border: '2px solid white',
-                            boxShadow: THEME.shadows.small
-                        }}
-                        className="avatar-pulse"
-                    />
+                    <div style={{ position: 'relative' }}>
+                        <Avatar
+                            size={60}
+                            style={{
+                                background: `linear-gradient(135deg, ${userColor}, ${userColor}dd)`,
+                                border: '3px solid white',
+                                boxShadow: THEME.shadows.medium,
+                                fontSize: '20px',
+                                fontWeight: '600'
+                            }}
+                            className="avatar-pulse"
+                        >
+                            {feedback.username?.charAt(0)?.toUpperCase() || '?'}
+                        </Avatar>
+                        <div 
+                            style={{
+                                position: 'absolute',
+                                bottom: -2,
+                                right: -2,
+                                width: '20px',
+                                height: '20px',
+                                borderRadius: '50%',
+                                background: `linear-gradient(135deg, ${THEME.secondary}, ${THEME.teal})`,
+                                border: '2px solid white',
+                                boxShadow: THEME.shadows.small
+                            }}
+                        />
+                    </div>
                 </Col>
 
                 <Col flex="auto">
                     <div style={{ display: 'flex', flexDirection: 'column', textAlign: 'left' }}>
-                        <Text strong style={{ fontSize: '16px', color: THEME.text.primary }}>
-                            {feedback.username}
+                        <Text 
+                            strong 
+                            style={{ 
+                                fontSize: '18px', 
+                                color: THEME.text.primary,
+                                fontWeight: '600',
+                                marginBottom: '4px'
+                            }}
+                        >
+                            {feedback.username || 'Anonymous'}
                         </Text>
-                        <Text type="secondary" style={{ fontSize: '14px' }}>
-                            <Tooltip title={feedback.dateTime}>
-                                <CalendarOutlined style={{ marginRight: '4px' }} />
-                                {getRelativeTime(feedback.dateTime)}
+                        <Text 
+                            type="secondary" 
+                            style={{ 
+                                fontSize: '14px',
+                                color: THEME.text.light,
+                                display: 'flex',
+                                alignItems: 'center'
+                            }}
+                        >
+                            <Tooltip title={feedback.dateTime || 'No date'}>
+                                <div style={{ display: 'flex', alignItems: 'center' }}>
+                                    <CalendarOutlined 
+                                        style={{ 
+                                            marginRight: '6px',
+                                            color: THEME.primary
+                                        }} 
+                                    />
+                                    {getRelativeTime(feedback.dateTime)}
+                                </div>
                             </Tooltip>
                         </Text>
                     </div>
                 </Col>
 
                 <Col>
-                    <Rate
-                        disabled
-                        defaultValue={feedback.rating}
-                        style={{ fontSize: '18px' }}
-                    />
+                    <div style={{
+                        padding: '8px 12px',
+                        background: `linear-gradient(135deg, ${THEME.warning}15, ${THEME.warning}25)`,
+                        borderRadius: THEME.borderRadius.medium,
+                        border: `1px solid ${THEME.warning}30`
+                    }}>
+                        <Rate
+                            disabled
+                            value={feedback.rating || 0}
+                            style={{ fontSize: '20px' }}
+                            className="custom-rate"
+                        />
+                    </div>
                 </Col>
             </Row>
 
-            <Row gutter={24} style={{ padding: '0 16px 16px' }}>
-                <Col xs={24} md={15}>
+            <Row gutter={24} style={{ padding: '0 24px 24px' }}>
+                <Col xs={24} md={feedback.imageUrl ? 15 : 24}>
                     <Space direction="vertical" size="large" style={{ width: '100%' }}>
                         <div style={{
-                            padding: '16px',
-                            borderRadius: THEME.borderRadius.small,
-                            border: `1px solid ${THEME.border.light}`,
-                            backgroundColor: THEME.background.light,
-                            textAlign: 'left'
+                            padding: '20px',
+                            borderRadius: THEME.borderRadius.medium,
+                            background: 'linear-gradient(135deg, #f1f5f9 0%, #e2e8f0 100%)',
+                            border: '1px solid rgba(148, 163, 184, 0.2)',
+                            textAlign: 'left',
+                            position: 'relative',
+                            overflow: 'hidden'
                         }}>
-                            <Text strong style={{ fontSize: '16px', color: THEME.text.primary }}>
+                            <div 
+                                style={{
+                                    position: 'absolute',
+                                    top: 0,
+                                    left: 0,
+                                    width: '4px',
+                                    height: '100%',
+                                    background: `linear-gradient(180deg, ${THEME.primary}, ${THEME.purple})`
+                                }}
+                            />
+                            <Text 
+                                strong 
+                                style={{ 
+                                    fontSize: '16px', 
+                                    color: THEME.text.primary,
+                                    fontWeight: '600',
+                                    display: 'flex',
+                                    alignItems: 'center'
+                                }}
+                            >
                                 Feedback
                             </Text>
                             <Paragraph style={{
-                                marginTop: '8px',
+                                marginTop: '12px',
                                 fontSize: '15px',
-                                lineHeight: '1.6',
-                                color: THEME.text.secondary
+                                lineHeight: '1.7',
+                                color: THEME.text.secondary,
+                                marginBottom: 0
                             }}>
-                                {feedback.feedback}
+                                {feedback.feedback || 'No feedback provided'}
                             </Paragraph>
                         </div>
 
                         <div style={{
-                            padding: '16px',
-                            borderRadius: THEME.borderRadius.small,
-                            border: `1px solid ${THEME.border.highlight}`,
-                            backgroundColor: 'rgba(230, 247, 255, 0.5)',
-                            textAlign: 'left'
+                            padding: '20px',
+                            borderRadius: THEME.borderRadius.medium,
+                            background: `linear-gradient(135deg, ${THEME.primary}08, ${THEME.primary}15)`,
+                            border: `1px solid ${THEME.primary}20`,
+                            textAlign: 'left',
+                            position: 'relative',
+                            overflow: 'hidden'
                         }}>
-                            <Text strong style={{ fontSize: '16px', color: THEME.text.primary }}>
+                            <div 
+                                style={{
+                                    position: 'absolute',
+                                    top: 0,
+                                    left: 0,
+                                    width: '4px',
+                                    height: '100%',
+                                    background: `linear-gradient(180deg, ${THEME.secondary}, ${THEME.teal})`
+                                }}
+                            />
+                            <Text 
+                                strong 
+                                style={{ 
+                                    fontSize: '16px', 
+                                    color: THEME.text.primary,
+                                    fontWeight: '600',
+                                    display: 'flex',
+                                    alignItems: 'center'
+                                }}
+                            >
                                 Caption
                             </Text>
                             <Paragraph style={{
-                                marginTop: '8px',
+                                marginTop: '12px',
                                 fontSize: '15px',
-                                lineHeight: '1.6',
-                                color: THEME.text.secondary
+                                lineHeight: '1.7',
+                                color: THEME.text.secondary,
+                                marginBottom: 0
                             }}>
                                 {feedback.caption}
                             </Paragraph>
@@ -263,57 +316,113 @@ const FeedbackCard = ({ feedback }) => {
                     </Space>
                 </Col>
 
-                <Col xs={20} md={9  }>
-                    <img src={feedback.imageUrl} alt="Feedback image" />
-                </Col>
+                {feedback.imageUrl && (
+                    <Col xs={24} md={9}>
+                        <div style={{
+                            borderRadius: THEME.borderRadius.medium,
+                            overflow: 'hidden',
+                            border: `2px solid ${THEME.border.light}`,
+                            height: '100%',
+                            minHeight: '320px',
+                            boxShadow: THEME.shadows.medium,
+                            position: 'relative',
+                            background: `linear-gradient(135deg, ${THEME.background.light}, #ffffff)`
+                        }}>
+                            <img 
+                                src={feedback.imageUrl} 
+                                alt="Feedback image"
+                                style={{
+                                    width: '100%',
+                                    height: '100%',
+                                    objectFit: 'cover',
+                                    transition: 'transform 0.3s ease'
+                                }}
+                                className="feedback-image"
+                                onError={(e) => {
+                                    e.target.style.display = 'none';
+                                }}
+                            />
+                        </div>
+                    </Col>
+                )}
             </Row>
         </Card>
     );
 };
 
-// Stats Overview Component
-const StatsOverview = ({ feedbacks }) => {
-    const avgRating = feedbacks.length > 0 
-        ? feedbacks.reduce((acc, curr) => acc + curr.rating, 0) / feedbacks.length
-        : 0;
+const StatsOverview = ({ feedbacks, timeFilter, onTimeFilterChange }) => {
+    const stats = useMemo(() => {
+        if (!Array.isArray(feedbacks) || feedbacks.length === 0) {
+            return {
+                avgRating: 0,
+                ratingCounts: [5, 4, 3, 2, 1].map(rating => ({
+                    rating,
+                    count: 0,
+                    percentage: 0
+                }))
+            };
+        }
+
+        const avgRating = feedbacks.reduce((acc, curr) => acc + (curr.rating || 0), 0) / feedbacks.length;
         
-    const ratingCounts = [5, 4, 3, 2, 1].map(rating => {
-        return {
-            rating,
-            count: feedbacks.filter(f => f.rating === rating).length,
-            percentage: feedbacks.length > 0 
-                ? (feedbacks.filter(f => f.rating === rating).length / feedbacks.length) * 100
-                : 0
-        };
-    });
+        const ratingCounts = [5, 4, 3, 2, 1].map(rating => {
+            const count = feedbacks.filter(f => f.rating === rating).length;
+            return {
+                rating,
+                count,
+                percentage: (count / feedbacks.length) * 100
+            };
+        });
+
+        return { avgRating, ratingCounts };
+    }, [feedbacks]);
 
     return (
         <Card
             style={{
-                borderRadius: THEME.borderRadius.large,
-                marginBottom: '24px',
-                boxShadow: THEME.shadows.small
+                borderRadius: THEME.borderRadius.xl,
+                marginBottom: '32px',
+                boxShadow: THEME.shadows.large,
+                background: 'linear-gradient(135deg, #ffffff 0%, #f8fafc 100%)',
+                border: '1px solid rgba(37, 99, 235, 0.08)',
+                overflow: 'hidden'
             }}
             className="stats-card"
         >
+
             <Row
                 justify="space-between"
                 align="middle"
                 style={{
-                    marginBottom: '30px',
-                    paddingBottom: '12px',
-                    borderBottom: '1px solid #f0f0f0'
+                    marginBottom: '32px',
+                    paddingBottom: '16px',
+                    borderBottom: `2px solid ${THEME.border.light}`
                 }}
             >
                 <Col>
-                    <Title level={3} style={{ margin: 0, color: THEME.text.primary }}>
-                        Overview
+                    <Title 
+                        level={2} 
+                        style={{ 
+                            margin: 0, 
+                            color: THEME.text.primary,
+                            background: `linear-gradient(135deg, ${THEME.primary}, ${THEME.purple})`,
+                            WebkitBackgroundClip: 'text',
+                            WebkitTextFillColor: 'transparent',
+                            fontWeight: '700'
+                        }}
+                    >
+                        Analytics Overview
                     </Title>
                 </Col>
                 <Col>
                     <Select
-                        style={{ width: 140 }}
-                        defaultValue="all"
+                        style={{ 
+                            width: 160,
+                            borderRadius: THEME.borderRadius.medium
+                        }}
+                        value={timeFilter}
+                        onChange={onTimeFilterChange}
+                        className="custom-select"
                     >
                         <Option value="all">All time</Option>
                         <Option value="today">Today</Option>
@@ -323,153 +432,207 @@ const StatsOverview = ({ feedbacks }) => {
                 </Col>  
             </Row>
             
-            <Row gutter={24}>
-                <Col xs={24} md={9}>
-                    <Statistic
-                        title={
-                            <Title level={4} style={{ color: THEME.text.primary }}>
-                                Average Rating
-                            </Title>
-                        }
-                        value={avgRating.toFixed(1)}
-                        precision={1}
-                        valueStyle={{ 
-                            color: THEME.primary, 
-                            fontSize: '36px',
-                            fontWeight: 600
-                        }}
-                        prefix={<StarFilled className="star-pulse" />}
-                        suffix={
-                            <span style={{ fontSize: '16px', color: THEME.text.light }}>
-                                / 5
-                            </span>
-                        }
-                    />
-                    <div style={{ marginTop: '12px' }}>
-                        <Rate disabled allowHalf value={avgRating} />
+            <Row gutter={32}>
+                <Col xs={24} md={10}>
+                    <div style={{
+                        padding: '24px',
+                        borderRadius: THEME.borderRadius.large,
+                        background: `linear-gradient(135deg, ${THEME.primary}10, ${THEME.primary}20)`,
+                        border: `2px solid ${THEME.primary}30`,
+                        textAlign: 'center'
+                    }}>
+                        <Statistic
+                            title={
+                                <Title level={4} style={{ 
+                                    color: THEME.text.primary,
+                                    marginBottom: '8px'
+                                }}>
+                                    Average Rating
+                                </Title>
+                            }
+                            value={stats.avgRating}
+                            precision={1}
+                            valueStyle={{ 
+                                color: THEME.primary, 
+                                fontSize: '42px',
+                                fontWeight: '700'
+                            }}
+                            prefix={<StarFilled className="star-pulse" />}
+                            suffix={
+                                <span style={{ 
+                                    fontSize: '20px', 
+                                    color: 'THEME.text.light',
+                                    fontWeight: '500'
+                                }}>
+                                    / 5
+                                </span>
+                            }
+                        />
+                        <div style={{ marginTop: '16px' }}>
+                            <Rate 
+                                disabled 
+                                allowHalf 
+                                value={stats.avgRating} 
+                                style={{ fontSize: '24px' }}
+                                className="custom-rate"
+                            />
+                        </div>
+                        <Text 
+                            type="secondary" 
+                            style={{ 
+                                display: 'block', 
+                                marginTop: '12px',
+                                fontSize: '16px',
+                                fontWeight: '500'
+                            }}
+                        >
+                            Based on {feedbacks.length} reviews
+                        </Text>
                     </div>
-                    <Text type="secondary" style={{ display: 'block', marginTop: '8px' }}>
-                        Based on {feedbacks.length} reviews
-                    </Text>
                 </Col>
 
-                <Col xs={24} md={15}>
-                    <Title level={4} style={{ color: THEME.text.primary }}>
-                        Rating Distribution
-                    </Title>
-                    <Space direction="vertical" style={{ width: '100%' }}>
-                        {ratingCounts.map(item => (
-                            <Row key={item.rating} align="middle" gutter={12}>
-                                <Col span={2}>
-                                    <Space>
-                                        <span style={{ color: THEME.text.primary }}>{item.rating}</span>
-                                        <StarFilled style={{ color: THEME.warning }} />
-                                    </Space>
-                                </Col>
-                                <Col span={18}>
-                                    <Progress
-                                        percent={item.percentage}
-                                        showInfo={false}
-                                        strokeColor={
-                                            item.rating >= 4 ? THEME.secondary :
-                                            item.rating >= 3 ? THEME.primary :
-                                            item.rating >= 2 ? THEME.warning : 
-                                            THEME.error
-                                        }
-                                        size="small"
-                                        className="animate-progress"
-                                    />
-                                </Col>
-                                <Col span={4}>
-                                    <Text style={{ color: THEME.text.secondary }}>
-                                        {item.count} reviews
-                                    </Text>
-                                </Col>
-                            </Row>
-                        ))}
-                    </Space>
+                <Col xs={24} md={14}>
+                    <div style={{
+                        padding: '24px',
+                        borderRadius: THEME.borderRadius.large,
+                        background: `linear-gradient(135deg, ${THEME.secondary}08, ${THEME.secondary}15)`,
+                        border: `2px solid ${THEME.secondary}25`,
+                        textAlign: 'center'
+                    }}>
+                        <Title level={4}  style={{ 
+                            color: THEME.text.primary,
+                            marginBottom: '20px',
+                            display: 'flex',
+                            justifyContent: 'center',
+                        }}>
+                            Rating Distribution
+                        </Title>
+                        <Space direction="vertical" style={{ width: '100%' }} size="middle">
+                            {stats.ratingCounts.map(item => (
+                                <Row key={item.rating} align="middle" gutter={16}>
+                                    <Col span={3}>
+                                        <Space align="center">
+                                            <span style={{ 
+                                                color: THEME.text.primary,
+                                                fontWeight: '600',
+                                                fontSize: '16px'
+                                            }}>
+                                                {item.rating}
+                                            </span>
+                                            <StarFilled style={{ 
+                                                color: THEME.warning,
+                                                fontSize: '16px'
+                                            }} />
+                                        </Space>
+                                    </Col>
+                                    <Col span={15}>
+                                        <Progress
+                                            percent={item.percentage}
+                                            showInfo={false}
+                                            strokeColor={{
+                                                from: item.rating >= 4 ? THEME.secondary : 
+                                                      item.rating >= 3 ? THEME.primary :
+                                                      item.rating >= 2 ? THEME.warning : THEME.error,
+                                                to: item.rating >= 4 ? THEME.teal : 
+                                                    item.rating >= 3 ? THEME.indigo :
+                                                    item.rating >= 2 ? '#fb923c' : '#fca5a5'
+                                            }}
+                                            size="default"
+                                            className="animate-progress"
+                                            strokeWidth={8}
+                                        />
+                                    </Col>
+                                    <Col span={6}>
+                                        <Text style={{ 
+                                            color: THEME.text.secondary,
+                                            fontWeight: '500',
+                                            fontSize: '14px'
+                                        }}>
+                                            {item.count} reviews
+                                        </Text>
+                                    </Col>
+                                </Row>
+                            ))}
+                        </Space>
+                    </div>
                 </Col>
             </Row>
         </Card>
     );
 };
 
-// Main Feedback Component
 const Feedback = () => {
-    const mockFeedbacks = [
-        {
-            id: 1,
-            username: "JohnSmith",
-            rating: 5,
-            feedback: "Very useful application, the captions are accurate and detailed! I no longer need to spend time describing images for my website.",
-            caption: "A golden retriever with shiny yellow fur running on a white sandy beach, carrying a blue frisbee in its mouth, creating splashes of water around it. The late afternoon sunlight reflects on its wet fur, creating a joyful and energetic scene.",
-            imageUrl: "https://images.unsplash.com/photo-1530281700549-e82e7bf110d6",
-            dateTime: "06/05/2025 14:32:15",
-            tags: ["Animals", "Outdoors"]
-        },
-        {
-            id: 2,
-            username: "EmmaWilliams",
-            rating: 4,
-            feedback: "Good feature, but could be improved in terms of accuracy when captioning tech gadgets. However, I'm still very satisfied with the overall experience.",
-            caption: "Modern workspace with a silver MacBook Pro placed on an oak wooden desk, next to a black notebook and a white coffee mug with rising steam. Natural light streams through a window creating soft shadows on the tabletop. A small bouquet of lavender in a glass vase sits in the corner of the desk adding a vibrant accent to the workspace.",
-            imageUrl: "https://images.unsplash.com/photo-1593642532842-98d0fd5ebc1a",
-            dateTime: "05/05/2025 09:15:48",
-            tags: ["Technology", "Workspace"]
-        },
-        {
-            id: 3,
-            username: "MichaelJohnson",
-            rating: 5,
-            feedback: "Saves a lot of time for SEO work, the automatic captions are accurate! I used this tool for our company's entire image library and the results are impressive.",
-            caption: "Impressive sunset over a tropical beach with the sky transitioning from orange to purple. The last rays of daylight reflect on the water creating a shimmering path of light stretching to the horizon. A few small fishing boats stand out as silhouettes against the vibrant sky, while palm trees along the shore sway gently in the breeze.",
-            imageUrl: "https://images.unsplash.com/photo-1507525428034-b723cf961d3e",
-            dateTime: "01/05/2025 17:45:22",
-            tags: ["Landscape", "Beach"]
-        },
-        {
-            id: 4,
-            username: "SophiaBrown",
-            rating: 5,
-            feedback: "Great tool for content marketers like me! The captions are natural and engaging, as if written by a human.",
-            caption: "A cup of rich black espresso on a pristine white saucer, accompanied by a slice of tiramisu with an even dusting of cocoa powder on top. Roasted coffee beans scattered around create a natural frame. Warm lighting from a hanging lamp highlights the coffee cup and accentuates the golden crema.",
-            imageUrl: "https://images.unsplash.com/photo-1514432324607-a09d9b4aefdd",
-            dateTime: "29/04/2025 11:20:05",
-            tags: ["Food", "Coffee"]
-        },
-        {
-            id: 5,
-            username: "DanielWilson",
-            rating: 4,
-            feedback: "Very convenient for managing content on our company website. Saves a lot of time and effort.",
-            caption: "Small urban rooftop garden with herbs and greens growing in ceramic pots and recycled wooden containers. Bright red cherry tomatoes stand out among the green vegetables. A drip irrigation system is delicately installed between the rows of plants. The backdrop features a cityscape with tall buildings, creating a contrast between the green space and urban environment.",
-            imageUrl: "https://images.unsplash.com/photo-1591857177580-dc82b9ac4e1e",
-            dateTime: "27/04/2025 16:10:33",
-            tags: ["Nature", "Urban"]
-        }
-    ];
-
-    const [feedbacks, setFeedbacks] = useState(mockFeedbacks);
+    const [feedbacks, setFeedbacks] = useState([]);
     const [loading, setLoading] = useState(true);
     const [ratingFilter, setRatingFilter] = useState('all');
+    const [timeFilter, setTimeFilter] = useState('all');
 
     useEffect(() => {
-        const timer = setTimeout(() => {
-            setLoading(false);
-        }, 800);
-
-        return () => clearTimeout(timer);
+        const fetchData = async () => {
+            try {
+                setLoading(true);
+                const feedbacksResponse = await fetchFeedBacks(localStorage.getItem('at'));
+                setFeedbacks(Array.isArray(feedbacksResponse) ? feedbacksResponse : []);
+            } catch (err) {
+                console.error('Failed to fetch feedbacks:', err.message);
+                setFeedbacks([]);
+            } finally {
+                setLoading(false);
+            }
+        };
+        fetchData();
     }, []);
+
+    const filteredFeedbacks = useMemo(() => {
+        if (!Array.isArray(feedbacks)) return [];
+        
+        return feedbacks.filter(feedback => {
+            if (ratingFilter !== 'all' && feedback.rating !== parseInt(ratingFilter)) {
+                return false;
+            }
+            
+            if (timeFilter !== 'all' && feedback.dateTime) {
+                try {
+                    let feedbackDate;
+                    if (feedback.dateTime.includes('/')) {
+                        const parts = feedback.dateTime.split(' ')[0].split('/');
+                        if (parts.length === 3) {
+                            feedbackDate = new Date(`${parts[2]}-${parts[1]}-${parts[0]}`);
+                        }
+                    } else {
+                        feedbackDate = new Date(feedback.dateTime);
+                    }
+                    
+                    if (feedbackDate && !isNaN(feedbackDate.getTime())) {
+                        const now = new Date();
+                        const diffDays = Math.floor((now - feedbackDate) / (1000 * 60 * 60 * 24));
+                        
+                        switch (timeFilter) {
+                            case 'today':
+                                return diffDays === 0;
+                            case 'week':
+                                return diffDays <= 7;
+                            case 'month':
+                                return diffDays <= 30;
+                            default:
+                                return true;
+                        }
+                    }
+                } catch (error) {
+                    console.error('Date filter error:', error);
+                }
+            }
+            
+            return true;
+        });
+    }, [feedbacks, ratingFilter, timeFilter]);
 
     const handleRatingFilterChange = (value) => {
         setRatingFilter(value);
-        
-        if (value === 'all') {
-            setFeedbacks(mockFeedbacks);
-        } else {
-            const rating = parseInt(value);
-            setFeedbacks(mockFeedbacks.filter(item => item.rating === rating));
-        }
+    };
+
+    const handleTimeFilterChange = (value) => {
+        setTimeFilter(value);
     };
 
     const renderSkeletons = () => {
@@ -479,33 +642,24 @@ const Feedback = () => {
                 style={{
                     marginBottom: '24px',
                     borderRadius: THEME.borderRadius.large,
-                    height: '300px',
-                    background: 'linear-gradient(to right, #f0f2f5, #e6e9ec, #f0f2f5)',
-                    backgroundSize: '200% 100%',
-                    animation: 'pulse 1.5s infinite'
+                    boxShadow: THEME.shadows.medium
                 }}
-            />
+            >
+                <Skeleton active paragraph={{ rows: 4 }} />
+            </Card>
         ));
     };
 
     return (
-        <div>
+        <div style={{ 
+            background: 'linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%)',
+            minHeight: '100vh',
+            padding: '24px'
+        }}>
             <style jsx global>{`
-                @keyframes pulse {
-                    0% { background-position: 0% 0%; }
-                    50% { background-position: 100% 0%; }
-                    100% { background-position: 0% 0%; }
-                }
-                
-                @keyframes float {
-                    0% { transform: translateY(0px); }
-                    50% { transform: translateY(-10px); }
-                    100% { transform: translateY(0px); }
-                }
-                
                 @keyframes star-pulse {
                     0% { transform: scale(1); }
-                    50% { transform: scale(1.2); }
+                    50% { transform: scale(1.15); }
                     100% { transform: scale(1); }
                 }
                 
@@ -514,88 +668,146 @@ const Feedback = () => {
                     100% { width: 100%; }
                 }
                 
+                @keyframes float {
+                    0%, 100% { transform: translateY(0px); }
+                    50% { transform: translateY(-10px); }
+                }
+                
                 .feedback-card-hover:hover {
-                    transform: translateY(-5px);
-                    box-shadow: ${THEME.shadows.large};
-                    border-color: ${THEME.border.highlight};
+                    transform: translateY(-8px) scale(1.02);
+                    box-shadow: ${THEME.shadows.xl};
+                    border-color: ${THEME.primary}40;
+                }
+                
+                .feedback-image:hover {
+                    transform: scale(1.05);
                 }
                 
                 .star-pulse {
-                    animation: star-pulse 1.5s infinite;
+                    animation: star-pulse 2s infinite;
                 }
                 
                 .avatar-pulse:hover {
-                    transform: scale(1.1);
-                    transition: transform 0.3s ease;
-                }
-                
-                .zoom-in-out {
-                    animation: star-pulse 1.5s infinite;
+                    transform: scale(1.1) rotate(5deg);
+                    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
                 }
                 
                 .animate-progress .ant-progress-bg {
-                    transition: all 1.5s ease;
-                    animation: progress-animate 1.5s;
+                    transition: all 2s cubic-bezier(0.4, 0, 0.2, 1);
+                    animation: progress-animate 2s;
                 }
                 
                 .stats-card {
-                    transition: all 0.3s ease;
+                    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
                 }
                 
                 .stats-card:hover {
-                    box-shadow: ${THEME.shadows.medium};
+                    box-shadow: ${THEME.shadows.xl};
+                }
+                
+                .custom-rate .ant-rate-star {
+                    margin-right: 4px;
+                }
+                
+                .custom-rate .ant-rate-star-full .ant-rate-star-first {
+                    color: ${THEME.warning};
+                }
+                
+                .custom-select .ant-select-selector {
+                    border-radius: ${THEME.borderRadius.medium}!important;
+                    border: 2px solid ${THEME.border.light}!important;
+                    transition: all 0.3s ease!important;
+                }
+                
+                .custom-select:hover .ant-select-selector {
+                    border-color: ${THEME.primary}!important;
+                    box-shadow: ${THEME.shadows.small}!important;
                 }
             `}</style>
 
-            <StatsOverview feedbacks={mockFeedbacks} />
+            <StatsOverview 
+                feedbacks={filteredFeedbacks} 
+                timeFilter={timeFilter}
+                onTimeFilterChange={handleTimeFilterChange}
+            />
 
             {loading ? (
                 renderSkeletons()
             ) : (
                 <Card
                     style={{
-                        borderRadius: THEME.borderRadius.large,
+                        borderRadius: THEME.borderRadius.xl,
                         overflow: 'hidden',
-                        boxShadow: THEME.shadows.small
+                        boxShadow: THEME.shadows.large,
+                        background: 'linear-gradient(135deg, #ffffff 0%, #f8fafc 100%)',
+                        border: '1px solid rgba(37, 99, 235, 0.08)'
                     }}
                 >
                     <div style={{ 
                         display: 'flex', 
                         justifyContent: 'space-between', 
                         alignItems: 'center', 
-                        paddingBottom: '16px',
-                        borderBottom: `1px solid ${THEME.border.light}`
+                        paddingBottom: '20px',
+                        borderBottom: `3px solid ${THEME.border.light}`,
+                        marginBottom: '24px'
                     }}>
-                        <Title level={3} style={{ margin: 0, color: THEME.text.primary }}>
-                            Feedbacks
+                        <Title 
+                            level={2} 
+                            style={{ 
+                                margin: 0, 
+                                background: `linear-gradient(135deg, ${THEME.primary}, ${THEME.secondary})`,
+                                WebkitBackgroundClip: 'text',
+                                WebkitTextFillColor: 'transparent',
+                                fontWeight: '700'
+                            }}
+                        >
+                            User Feedbacks
                         </Title>
                         <Select
-                            style={{ width: 160 }}
-                            defaultValue="all"
+                            style={{ width: 180 }}
+                            value={ratingFilter}
                             onChange={handleRatingFilterChange}
+                            className="custom-select"
                         >
-                            <Option value="all">All Ratings</Option>
+                            <Option value="all">🌟 All Ratings</Option>
                             {[5, 4, 3, 2, 1].map(rating => (
                                 <Option key={rating} value={`${rating}`}>
-                                    <Rate disabled value={rating} style={{ fontSize: '12px' }} />
+                                    <Space>
+                                        <span>{rating}</span>
+                                        <Rate disabled value={rating} style={{ fontSize: '12px' }} />
+                                    </Space>
                                 </Option>
                             ))}
                         </Select>
                     </div>
                 
-                    <div style={{ padding: '16px 0px' }}>
-                        {feedbacks.length > 0 ? (
-                            feedbacks.map(feedback => (
-                                <FeedbackCard key={feedback.id} feedback={feedback} />
+                    <div>
+                        {filteredFeedbacks.length > 0 ? (
+                            filteredFeedbacks.map((feedback, index) => (
+                                <FeedbackCard 
+                                    key={feedback.id || index} 
+                                    feedback={feedback} 
+                                />
                             ))
                         ) : (
                             <Empty
                                 image={Empty.PRESENTED_IMAGE_DEFAULT}
                                 description={
-                                    <span>No feedback matches the selected filter</span>
+                                    <span style={{
+                                        fontSize: '16px',
+                                        color: THEME.text.secondary
+                                    }}>
+                                        {feedbacks.length === 0 
+                                            ? 'No feedback available' 
+                                            : 'No feedback matches the selected filters'
+                                        }
+                                    </span>
                                 }
                                 style={{
-                                    padding: '48px'
+                                    padding: '60px',
+                                    background: `linear-gradient(135deg, ${THEME.background.light}, #ffffff)`,
+                                    borderRadius: THEME.borderRadius.large,
+                                    margin: '20px 0'
                                 }}
                             />
                         )}

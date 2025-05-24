@@ -16,12 +16,14 @@ import { fetchAllAlbums } from '../../../services/albumService'
 import Creation from './AlbumCreation'
 import Rename from './AlbumRename'
 import Delete from './AlbumDelete';
+import { useSelector } from "react-redux"
 
 
 function Album() {
+    const isDarkMode = useSelector((state) => state.app.mode) === 'dark';
     const [columns, setColumns] = useState(3);
     const navigate = useNavigate();
-    const [isLoading, setIsLoading] = useState(false);
+    const [isLoading, setIsLoading] = useState(true);
 
     const [albums, setAlbums] = useState([]);
     const [filteredAlbums, setFilteredAlbums] = useState([]);
@@ -59,7 +61,6 @@ function Album() {
 
     useEffect(() => {
         const fetchData = async () => {
-            setIsLoading(true);
             try {
                 const data = await fetchAllAlbums(localStorage.getItem('at'));
                 setAlbums(data);
@@ -188,7 +189,6 @@ function Album() {
                                 <div className="flex items-center justify-center p-2.5 rounded-2xl h-[250px] w-full">  
                                     <LazyLoadImage
                                         src={thumbnail_url}
-                                        alt=' '
                                         className='h-full object-cover rounded-xl w-full'
                                     />
                                     <ImageListItemBar
@@ -218,31 +218,49 @@ function Album() {
                 )}       
             </div>
 
-            {activeSelect && <div className='absolute bottom-0 w-full h-[48px] bg-slate-800 flex items-center gap-8 justify-center text-slate-200'>
-                <button 
+            {activeSelect && (
+                <div
+                    className={`
+                    absolute bottom-0 w-full h-[48px] flex items-center gap-8 justify-center 
+                    ${isDarkMode ? 'bg-slate-800 text-slate-200' : 'bg-white text-gray-800'}
+                    `}
+                >
+                    <button
                     className={`
                         flex flex-col items-center gap-[3px] transition-colors duration-200 mt-[6px]
-                        ${selectedAlbums.length != 1 ? '!cursor-default text-gray-500 opacity-50' : 'hover:text-yellow-400'
-                        }`
-                    }                    
+                        ${selectedAlbums.length != 1 
+                        ? '!cursor-default opacity-50 ' + (isDarkMode ? 'text-gray-500' : 'text-gray-400')
+                        : isDarkMode 
+                            ? 'hover:text-yellow-400' 
+                            : 'hover:text-yellow-600'
+                        }
+                    `}
                     disabled={selectedAlbums.length != 1}
                     onClick={() => setOpenRename(true)}
-                >
+                    >
                     <FontAwesomeIcon icon={faPen} className='text-[17px]' />
                     <span className='text-xs'>Rename</span>
-                </button>
+                    </button>
 
-                <button 
+                    <button
                     className={`
                         flex flex-col items-center gap-[3px] transition-colors duration-200 mt-[6px]
-                        ${selectedAlbums.length == 0 ? '!cursor-default text-gray-500 opacity-50' : 'hover:text-rose-400'}`}
+                        ${selectedAlbums.length == 0 
+                        ? '!cursor-default opacity-50 ' + (isDarkMode ? 'text-gray-500' : 'text-gray-400')
+                        : isDarkMode 
+                            ? 'hover:text-rose-400' 
+                            : 'hover:text-red-500'
+                        }
+                    `}
                     disabled={selectedAlbums.length == 0}
                     onClick={() => setOpenDelete(true)}
-                >
+                    >
                     <FontAwesomeIcon icon={faTrash} className='text-[17px]' />
                     <span className='text-xs'>Delete</span>
-                </button>
-            </div>}
+                    </button>
+                </div>
+                )}
+
 
             <Creation
                 openCreation={openCreation} 

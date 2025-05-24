@@ -5,7 +5,6 @@ import { motion } from "framer-motion";
 function Home() {
     const navigate = useNavigate();
 
-    // Featured products with Unsplash images
     const featuredProducts = [
         "https://images.unsplash.com/photo-1611186871348-b1ce696e52c9?w=500&h=350&fit=crop&q=80", // Headphones
         "https://images.unsplash.com/photo-1512054502232-10a0a035d672?w=500&h=350&fit=crop&q=80", // Speaker
@@ -13,23 +12,21 @@ function Home() {
         "https://images.unsplash.com/photo-1517336714731-489689fd1ca8?w=500&h=350&fit=crop&q=80"  // Laptop
     ];
 
-    // Testimonials with animation stagger effect
     const testimonials = [
         {
-            quote: "Tôi không còn phải mất hàng giờ nghĩ caption cho hình ảnh!",
-            author: "Linh Nguyễn, Blogger"
+            quote: "I no longer spend hours thinking of captions for my images!",
+            author: "Linh Nguyen, Blogger"
         },
         {
-            quote: "Phụ đề tự động giúp video của tôi tiếp cận nhiều khán giả hơn.",
-            author: "Minh Trần, Content Creator"
+            quote: "Automatic subtitles help my videos reach a wider audience.",
+            author: "Minh Tran, Content Creator"
         },
         {
-            quote: "Công cụ AI tuyệt vời cho marketing thương hiệu của chúng tôi!",
-            author: "Hà Phạm, Marketing Manager"
+            quote: "An excellent AI tool for our brand marketing!",
+            author: "Ha Pham, Marketing Manager"
         }
     ];
 
-    // Animation variants
     const containerVariants = {
         hidden: { opacity: 0 },
         visible: { 
@@ -56,7 +53,6 @@ function Home() {
             animate={{ opacity: 1 }}
             transition={{ duration: 0.8 }}
         >
-            {/* Hero Section */}
             <div className="flex not-md:flex-col gap-[40px] items-center bg-white rounded-3xl p-8 shadow-xl max-w-[2056px]">
                 <motion.img 
                     src="https://images.unsplash.com/photo-1516321497487-e288fb19713f?w=800&h=600&fit=crop&q=80" 
@@ -74,22 +70,21 @@ function Home() {
                     transition={{ duration: 1, delay: 0.4 }}
                 >
                     <span className="text-[36px] not-md:text-2xl font-bold text-red-500 drop-shadow-md text-center">
-                        Trình tạo phụ đề cho ảnh và video
+                        Caption Generator for Images and Videos
                     </span>
                     <span className="text-gray-600 mt-2 text-xl not-md:text-base text-center">
-                        Tạo phụ đề ngay lập tức cho video của bạn và tiếp cận khán giả toàn cầu!
-                        Phần mềm tạo phụ đề video tự động với công nghệ AI.
+                        Create captions instantly for your videos and reach a global audience!
+                        Automatic video captioning software powered by AI technology.
                     </span>
                     <Button
                         onClick={() => navigate('/login')}
                         className="bg-red-500 hover:bg-red-600 text-white font-bold py-3 px-8 rounded-full text-lg shadow-md transform transition hover:scale-105"
                     >
-                        Khám Phá Ngay
+                        Explore Now
                     </Button>
                 </motion.div>
             </div>
 
-            {/* Featured Products Section */}
             <motion.div 
                 className="flex flex-col gap-[30px] items-center bg-white rounded-3xl py-8 shadow-xl max-w-[2056px] md:px-[30px]"
                 initial="hidden"
@@ -101,7 +96,7 @@ function Home() {
                     className="text-[36px] not-md:text-2xl font-bold text-red-500 drop-shadow-md"
                     variants={itemVariants}
                 >
-                    Những sản phẩm nổi bật
+                    Featured Products
                 </motion.span>
 
                 <div className="flex not-md:flex-col gap-[30px] justify-center not-md:px-14">
@@ -127,12 +122,11 @@ function Home() {
                         onClick={() => navigate('/product')}
                         className="bg-red-500 hover:bg-red-600 text-white font-bold py-3 px-8 rounded-full text-lg shadow-md transform transition hover:scale-105 mt-6"
                     >
-                        Xem thêm sản phẩm
+                        View More Products
                     </Button>
                 </motion.div>
             </motion.div>
 
-            {/* About Section */}
             <div className="flex not-md:flex-col items-center gap-12 bg-gray-50 rounded-3xl p-12 shadow-lg">
                 <motion.div 
                     className="md:w-1/2 not-md:w-full flex flex-col gap-[25px] items-center"
@@ -145,12 +139,12 @@ function Home() {
                         AI Caption Generator!
                     </h2>
                     <p className="text-gray-600 mt-2 text-xl not-md:text-base text-center">
-                        AI Caption Generator – Tạo caption cho ảnh chỉ trong vài giây với công nghệ trí tuệ nhân tạo tiên tiến nhất
+                        AI Caption Generator – Create captions for images in just seconds with the most advanced artificial intelligence technology
                     </p>
                     <Button
                         onClick={() => navigate('/about-us')}
                     >
-                        <p className="text-lg not-md:text-sm">Về chúng tôi</p>
+                        <p className="text-lg not-md:text-sm">About Us</p>
                     </Button>
                 </motion.div>
 
@@ -169,7 +163,6 @@ function Home() {
                 </motion.div>
             </div>
 
-            {/* Testimonials Section */}
             <motion.div 
                 className="flex flex-col items-center gap-[30px] bg-white rounded-3xl p-12 shadow-xl"
                 initial="hidden"
@@ -181,7 +174,7 @@ function Home() {
                     className="text-3xl font-bold text-red-500 drop-shadow-md"
                     variants={itemVariants}
                 >
-                    Khách hàng nói gì?
+                    What Our Customers Say
                 </motion.span>
                 
                 <div className="flex gap-6 flex-wrap justify-center">

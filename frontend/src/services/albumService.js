@@ -79,3 +79,26 @@ export async function countAlbums(token) {
         throw err
     }
 }
+
+export async function computeSizeAlbum(token) {
+    try {
+        const response = await API.get('/album/storage', {
+            headers: { 'Authorization': `Bearer ${token}` }
+        });
+
+        const albums = response.data;
+
+        const totalSize = albums.reduce((sum, album) => sum + album.size, 0);
+
+        const formatted = albums.map(album => ({
+            name: album.album_name,
+            size: album.size,
+            percentage: totalSize > 0 ? +(album.size / totalSize * 100) : 0
+        }));
+
+        return formatted;
+
+    } catch (err) {
+        throw err;
+    }
+}

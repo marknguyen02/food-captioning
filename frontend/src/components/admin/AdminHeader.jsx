@@ -1,24 +1,24 @@
-import { faBell, faUser, faCog, faSignOutAlt, faEnvelope, faLock, faTrash } from "@fortawesome/free-solid-svg-icons";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { Popover, Modal, Input, Button, Form, message } from "antd";
-import { useSelector, useDispatch } from "react-redux";
-import { deleteState } from "../../redux/appSlice";
-import { useState } from "react";
-import { deleteAccount, logout, updateAccount } from "../../services/authService";   
-import { useNavigate } from "react-router-dom";
+import { faBell, faUser, faCog, faSignOutAlt, faEnvelope, faLock, faTrash } from "@fortawesome/free-solid-svg-icons"
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
+import { Popover, Modal, Input, Button, Form, message } from "antd"
+import { useSelector, useDispatch } from "react-redux"
+import { deleteState } from "../../redux/appSlice"
+import { useState } from "react"
+import { deleteAccount, logout, updateAccount } from "../../services/authService"   
+import { useNavigate } from "react-router-dom"
 
 function Header() {
-    const { fullname, username, email } = useSelector((state) => state.app.user) || {};
-    const [isAccountModalOpen, setIsAccountModalOpen] = useState(false);
-    const [isSettingsModalOpen, setIsSettingsModalOpen] = useState(false);
-    const [isChangePasswordModalOpen, setIsChangePasswordModalOpen] = useState(false);
-    const [isChangeEmailModalOpen, setIsChangeEmailModalOpen] = useState(false);
+    const { fullname, username, email } = useSelector((state) => state.app.user) || {}
+    const [isAccountModalOpen, setIsAccountModalOpen] = useState(false)
+    const [isSettingsModalOpen, setIsSettingsModalOpen] = useState(false)
+    const [isChangePasswordModalOpen, setIsChangePasswordModalOpen] = useState(false)
+    const [isChangeEmailModalOpen, setIsChangeEmailModalOpen] = useState(false)
 
     const popoverStyles = `
         .ant-popover-content .ant-popover-inner {
-            background-color: #FFFFFF !important;
+            background-color: #FFFFFF !important
         }
-    `;
+    `
 
     return (
         <div className="flex items-center justify-end p-2 h-full w-full !bg-[#F3F4F6]">
@@ -56,7 +56,7 @@ function Header() {
                         classNames={{ root: 'custom-popover' }}
                     >
                         <img 
-                            src="https://static.vecteezy.com/system/resources/previews/009/292/244/non_2x/default-avatar-icon-of-social-media-user-vector.jpg" 
+                            src="https://as2.ftcdn.net/v2/jpg/03/31/69/91/1000_F_331699188_lRpvqxO5QRtwOM05gR50ImaaJgBx68vi.jpg" 
                             className="h-[40px] sm:h-[36px] rounded-full cursor-pointer ring-2 ring-gray-300 hover:ring-4 hover:ring-gradient-to-r hover:from-blue-400 hover:to-blue-600 hover:scale-105 transition-all duration-300 text-transparent"
                         />
                     </Popover>
@@ -84,7 +84,7 @@ function Header() {
                 />
             </div>
         </div>
-    );
+    )
 }
 
 const NotificationsPopoverContent = () => {
@@ -107,7 +107,7 @@ const NotificationsPopoverContent = () => {
             message: "Scheduled maintenance on May 4, 2025, from 2 AM to 4 AM.",
             timestamp: "1 day ago",
         },
-    ]);
+    ])
 
     return (
         <div className="w-80 max-w-[90vw] bg-white rounded-xl transition-all duration-300">
@@ -144,17 +144,19 @@ const NotificationsPopoverContent = () => {
             </div>
         </div>
     )
-};
+}
 
 const MainPopoverContent = ({ fullname, openAccountModal, openSettingsModal }) => {
-    const navigate = useNavigate();
-    const dispatch = useDispatch();
+    const navigate = useNavigate()
+    const dispatch = useDispatch()
     const handleLogout = async () => {
-        await logout();
-        localStorage.removeItem('at');
-        dispatch(deleteState());
-        navigate('/');
-    };
+        await logout()
+        localStorage.removeItem('at')
+        localStorage.removeItem('mode')
+        localStorage.removeItem('role')
+        dispatch(deleteState())
+        navigate('/')
+    }
 
     return (
         <div className="w-56 max-w-[90vw] bg-white rounded-xl transition-all duration-300">
@@ -187,8 +189,8 @@ const MainPopoverContent = ({ fullname, openAccountModal, openSettingsModal }) =
                 </button>
             </div>
         </div>
-    );
-};
+    )
+}
 
 const AccountModal = ({ isOpen, onClose, fullname, username, email }) => {
     return (
@@ -228,8 +230,8 @@ const AccountModal = ({ isOpen, onClose, fullname, username, email }) => {
                 ))}
             </div>
         </Modal>
-    );
-};
+    )
+}
 
 const SettingsModal = ({ isOpen, onClose, openChangePasswordModal, openChangeEmailModal }) => {
     const handleDeleteAccount = () => {
@@ -240,13 +242,13 @@ const SettingsModal = ({ isOpen, onClose, openChangePasswordModal, openChangeEma
             okType: "danger",
             cancelText: "Cancel",
             onOk: async () => {
-                await deleteAccount(localStorage.getItem('at'));
-                await logout();
-                localStorage.removeItem('at');
-                window.location.reload();
+                await deleteAccount(localStorage.getItem('at'))
+                await logout()
+                localStorage.removeItem('at')
+                window.location.reload()
             }
-        });
-    };
+        })
+    }
 
     return (
         <Modal
@@ -293,11 +295,11 @@ const SettingsModal = ({ isOpen, onClose, openChangePasswordModal, openChangeEma
                 </button>
             </div>
         </Modal>
-    );
-};
+    )
+}
 
 const ChangePasswordModal = ({ isOpen, onClose }) => {
-    const [form] = Form.useForm();
+    const [form] = Form.useForm()
 
     const handleChangePassword =  async (values) => {
         const formData = {
@@ -305,30 +307,30 @@ const ChangePasswordModal = ({ isOpen, onClose }) => {
             new_password: values.newPassword
         }
         try {
-            await updateAccount(formData, localStorage.getItem('at'));
-            message.success("Password changed successfully");
-            form.resetFields();
-            onClose();
+            await updateAccount(formData, localStorage.getItem('at'))
+            message.success("Password changed successfully")
+            form.resetFields()
+            onClose()
         } catch (err) {
-            const errorDetail = err.response?.data?.detail;
+            const errorDetail = err.response?.data?.detail
             if (errorDetail) {
                 const formattedErrors = Object.keys(errorDetail).map(field => ({
                     name: field,
                     errors: [errorDetail[field]]
-                }));
-                form.setFields(formattedErrors);
+                }))
+                form.setFields(formattedErrors)
             } else {
-                form.setFields([{ name: 'password', errors: ["Something went wrong"] }]);
+                form.setFields([{ name: 'password', errors: ["Something went wrong"] }])
             }
         }
-    };
+    }
 
     return (
         <Modal
             open={isOpen}
             onCancel={() => {
-                onClose();
-                form.resetFields();
+                onClose()
+                form.resetFields()
             }}
             footer={null}
             centered
@@ -383,9 +385,9 @@ const ChangePasswordModal = ({ isOpen, onClose }) => {
                         ({ getFieldValue }) => ({
                             validator(_, value) {
                                 if (!value || getFieldValue('newPassword') === value) {
-                                    return Promise.resolve();
+                                    return Promise.resolve()
                                 }
-                                return Promise.reject(new Error("Passwords do not match"));
+                                return Promise.reject(new Error("Passwords do not match"))
                             },
                         }),
                     ]}
@@ -415,11 +417,11 @@ const ChangePasswordModal = ({ isOpen, onClose }) => {
                 </Form.Item>
             </Form>
         </Modal>
-    );
-};
+    )
+}
 
 const ChangeEmailModal = ({ isOpen, onClose }) => {
-    const [form] = Form.useForm();
+    const [form] = Form.useForm()
 
     const handleChangeEmail = async (values) => {
         const formData = { 
@@ -428,30 +430,30 @@ const ChangeEmailModal = ({ isOpen, onClose }) => {
         }
 
         try {
-            await updateAccount(formData, localStorage.getItem('at'));
-            message.success("Email changed successfully");
-            form.resetFields();
-            onClose();
+            await updateAccount(formData, localStorage.getItem('at'))
+            message.success("Email changed successfully")
+            form.resetFields()
+            onClose()
         } catch (err) { 
-            const errorDetail = err.response?.data?.detail;
+            const errorDetail = err.response?.data?.detail
             if (errorDetail) {
                 const formattedErrors = Object.keys(errorDetail).map(field => ({
                     name: field,
                     errors: [errorDetail[field]]
-                }));
-                form.setFields(formattedErrors);
+                }))
+                form.setFields(formattedErrors)
             } else {
-                form.setFields([{ name: 'password', errors: ["Something went wrong"] }]);
+                form.setFields([{ name: 'password', errors: ["Something went wrong"] }])
             }
         }
-    };
+    }
 
     return (
         <Modal
             open={isOpen}
             onCancel={() => {
-                onClose();
-                form.resetFields();
+                onClose()
+                form.resetFields()
             }}
             footer={null}
             centered
@@ -515,7 +517,7 @@ const ChangeEmailModal = ({ isOpen, onClose }) => {
                 </Form.Item>
             </Form>
         </Modal>
-    );
-};
+    )
+}
 
-export default Header;
+export default Header

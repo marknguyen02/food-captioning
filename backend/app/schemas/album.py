@@ -31,3 +31,9 @@ class AlbumCount(BaseModel):
     album_id: str
     count: int
     album_name: str
+
+
+class AlbumStorage(BaseModel):
+    album_id: str
+    size: float
+    album_name: str

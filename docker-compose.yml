@@ -1,36 +1,25 @@
 services:
   backend:
     build: ./backend
-    container_name: backend-container
-    environment:
-      - ACCESS_TOKEN_EXPIRE_MINUTES=${ACCESS_TOKEN_EXPIRE_MINUTES}
-      - REFRESH_TOKEN_EXPIRE_DAYS=${REFRESH_TOKEN_EXPIRE_DAYS}
-      - JWT_SECRET_KEY=${JWT_SECRET_KEY}
-      - JWT_ALGORITHM=${JWT_ALGORITHM}
-      - MONGO_URI=${MONGO_URI}
-      - MONGO_DB_NAME=${MONGO_DB_NAME}
-      - AWS_ACCESS_KEY=${AWS_ACCESS_KEY}
-      - AWS_SECRET_KEY=${AWS_SECRET_KEY}
-      - BUCKET_NAME=${BUCKET_NAME}
+    container_name: visual-captioning-backend
+    env_file:
+      - ./backend/.env
     ports:
       - "8000:8000"
     networks:
       - app_network
 
   frontend:
-    build:
-      context: ./frontend
-    container_name: frontend-container
+    build: ./frontend
+    container_name: visual-captioning-frontend
+    env_file:
+      - ./frontend/.env
     ports:
       - "5173:5173"
-    volumes:
-      - ./frontend:/app
-      - /app/node_modules
     networks:
       - app_network
     depends_on:
       - backend
-    command: npm run dev -- --host 0.0.0.0
 
 networks:
   app_network:

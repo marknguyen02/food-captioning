@@ -6,10 +6,11 @@ from app.controllers.model import router as model_router
 from app.controllers.album import router as album_router
 from app.controllers.media import router as media_router
 from app.controllers.rating import router as rating_router
+from app.controllers.admin import router as admin_router
 
 app = FastAPI()
 
-origins = ["http://localhost:5173"]
+origins = ["http://54.254.2.12:5173"]
 
 app.add_middleware(
     CORSMiddleware,
@@ -25,6 +26,7 @@ app.include_router(model_router, prefix='/model', tags=['model'])
 app.include_router(album_router, prefix='/album', tags=['album'])
 app.include_router(media_router, prefix='/media', tags=['media'])
 app.include_router(rating_router, prefix='/rating', tags=['rating'])
+app.include_router(admin_router, prefix='/admin', tags=['admin'])
 
 
 
@@ -34,4 +36,4 @@ async def hello_wolrd():
 
 
 if __name__ == '__main__':
-    uvicorn.run(app)
+    uvicorn.run("app.main:app", host="0.0.0.0", port=8000, reload=True)

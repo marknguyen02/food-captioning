@@ -1,149 +1,165 @@
-import { useState, useEffect } from "react";
-import { Drawer, Input, AutoComplete, Button, Checkbox } from "antd";
-import { CloseOutlined, SearchOutlined } from '@ant-design/icons';
-import { ImageList, ImageListItem, ImageListItemBar } from "@mui/material";
-import { LazyLoadImage } from "react-lazy-load-image-component";
-import { fetchAllAlbums } from "../../../services/albumService";
-import { createMediaMetadata, addMediaFile } from "../../../services/mediaService";
-import { message } from "antd";
-import Creation from "../album/AlbumCreation";
-
+import { useState, useEffect, useCallback, useMemo } from "react"
+import { Drawer, Input, AutoComplete, Button, Checkbox, message } from "antd"
+import { CloseOutlined, SearchOutlined } from '@ant-design/icons'
+import { ImageList, ImageListItem, ImageListItemBar } from "@mui/material"
+import { LazyLoadImage } from "react-lazy-load-image-component"
+import { fetchAllAlbums } from "../../../services/albumService"
+import { createMediaMetadata, addMediaFile } from "../../../services/mediaService"
+import Creation from "../album/AlbumCreation"
+import { useSelector } from "react-redux"
 
 const SaveDrawer = ({ openSaveCard, setOpenSaveCard, hasSaved, setHasSaved, caption, file }) => {
-    const [allAlbums, setAllAlbums] = useState([]);
-    const [filteredAlbums, setFilteredAlbums] = useState([]);
-    const [selectedId, setSelectedId] = useState();
-    const [searchValue, setSearchValue] = useState('');
-    const [isLoading, setIsLoading] = useState(false);
-    const [mediaName, setMediaName] = useState();
-    const [searchOptions, setSearchOptions] = useState([]);
-    const [columns, setColumns] = useState(3);
-    const [openCreation, setOpenCreation] = useState(false);   
+    const isDarkMode = useSelector((state) => state.app.mode) === 'dark'
+    
+    // State management
+    const [allAlbums, setAllAlbums] = useState([])
+    const [filteredAlbums, setFilteredAlbums] = useState([])
+    const [selectedId, setSelectedId] = useState()
+    const [searchValue, setSearchValue] = useState('')
+    const [isLoading, setIsLoading] = useState(true)
+    const [mediaName, setMediaName] = useState('')
+    const [columns, setColumns] = useState(3)
+    const [openCreation, setOpenCreation] = useState(false)   
+    const [isLoadingButton, setIsLoadingButton] = useState(false)
 
-    useEffect(() => {
-        const fetchData = async () => {
-            try {
-                const data = await fetchAllAlbums(localStorage.getItem('at'));
-                setAllAlbums(data);
-                setFilteredAlbums(data);
+    const searchOptions = useMemo(() => 
+        allAlbums.map(collection => ({
+            value: collection.album_name,
+            label: collection.album_name,
+            id: collection.album_id
+        })), [allAlbums]
+    )
 
-                const options = data.map(collection => ({
-                    value: collection.album_name,
-                    label: collection.album_name,
-                    id: collection.album_id
-                }));
-                setSearchOptions(options);
-            } catch (error) {
-                console.error('Error fetching Albums:', error);
-            }
-        };
+    const themeClasses = useMemo(() => ({
+        drawer: isDarkMode ? "!bg-[#1E293B]" : "!bg-gray-50",
+        text: isDarkMode ? 'text-gray-200' : 'text-gray-700',
+        input: isDarkMode 
+            ? 'bg-gray-800 border-gray-700 text-gray-300 placeholder-gray-400 focus:outline-none focus:border-cyan-500' 
+            : 'bg-white border-gray-300 text-gray-700 placeholder-gray-500 focus:outline-none focus:border-cyan-600',
+        closeIcon: isDarkMode 
+            ? '!text-white hover:!text-red-600' 
+            : '!text-gray-700 hover:!text-red-600',
+        searchIcon: isDarkMode ? "text-gray-400" : "text-gray-500",
+        albumBg: isDarkMode ? 'bg-[#263957]' : 'bg-[#E6EEF9]',
+        albumText: isDarkMode ? "text-gray-300 text-sm" : "text-gray-700 text-sm",
+        emptyState: isDarkMode ? 'text-gray-400' : 'text-gray-500',
+        checkbox: isDarkMode ? "text-white" : "text-gray-800"
+    }), [isDarkMode])
 
-        if (openSaveCard) {
-            fetchData();
+    const fetchAlbumsData = useCallback(async () => {
+        if (!openSaveCard) return
+        
+        try {
+            setIsLoading(true)
+            const data = await fetchAllAlbums(localStorage.getItem('at'))
+            setAllAlbums(data)
+            setFilteredAlbums(data)
+        } catch (err) {
+            console.error(err.message)
+            message.error("Không thể tải danh sách album")
+        } finally {
+            setIsLoading(false)
         }
-    }, [openSaveCard]);
+    }, [openSaveCard])
 
-    useEffect(() => {
-        const handleResize = () => {
-            if (window.innerWidth <= 550) {
-                setColumns(1);
-            } else if (window.innerWidth <= 1024) {
-                setColumns(2);
-            } else {
-                setColumns(3);
-            }
-        };
-        handleResize();
-        window.addEventListener('resize', handleResize);
-        return () => window.removeEventListener('resize', handleResize);
-    }, []);
+    const handleResize = useCallback(() => {
+        const width = window.innerWidth
+        setColumns(width <= 550 ? 1 : width <= 1024 ? 2 : 3)
+    }, [])
 
-    const handleSearch = (value) => {
-        setSearchValue(value);
-
+    const handleSearch = useCallback((value) => {
+        setSearchValue(value)
+        
         if (!value) {
-            setFilteredAlbums(allAlbums);
-            return;
+            setFilteredAlbums(allAlbums)
+            return
         }
 
-        const searchTerm = value.toLowerCase();
+        const searchTerm = value.toLowerCase()
         const filtered = allAlbums.filter(collection => 
             collection.album_name.toLowerCase().includes(searchTerm)
-        );
+        )
+        setFilteredAlbums(filtered)
+    }, [allAlbums])
 
-        setFilteredAlbums(filtered);
-    };
-
-    const handleSelectCollection = (value, option) => {
-        setSearchValue(value);
-        setSelectedId(option.id);
-
-        const selected = allAlbums.filter(c => c.album_id === option.id);
+    const handleSelectCollection = useCallback((value, option) => {
+        setSearchValue(value)
+        setSelectedId(option.id)
+        
+        const selected = allAlbums.filter(c => c.album_id === option.id)
         if (selected.length > 0) {
-            setFilteredAlbums(selected);
+            setFilteredAlbums(selected)
         }
-    };
+    }, [allAlbums])
 
-    const handleSaveFile = async () => {
+    const handleAlbumClick = useCallback((albumId) => {
+        setSelectedId(prevId => prevId === albumId ? undefined : albumId)
+    }, [])
+
+    const handleSaveFile = useCallback(async () => {
         if (!selectedId) {
-            message.error("Please select an album.");
-            return;
+            message.error("Please select an album.")
+            return
         }
 
         if (hasSaved) {
-            message.error('You have already saved a file.');
-            return;
+            message.error('You have already saved a file.')
+            return
         }
 
         const formData = {
             album_id: selectedId,
             media_type: caption.label,
-            caption: caption.title,
+            caption: caption.caption,
+            media_name: mediaName || 'Untitled',
             ...(caption.name && { name: caption.name }),
-            ...(caption.instructions.length > 0 && { instructions: caption.ingredients }),
-            ...(caption.ingredients.length > 0 && { ingredients: caption.instructions }),
-        };
-
-        if (mediaName) {
-            formData.media_name = mediaName;
-        } else {
-            formData.media_name = 'Untitled';
+            ...(caption.instructions?.length > 0 && { instructions: caption.ingredients }),
+            ...(caption.ingredients?.length > 0 && { ingredients: caption.instructions }),
         }
 
-        setIsLoading(true);
+        setIsLoadingButton(true)
         try {
-            const response = await addMediaFile(file, localStorage.getItem('at'));
-            formData.media_url = response.media_url;
-            await createMediaMetadata(formData, localStorage.getItem('at'));
-            setHasSaved(true);
-            message.success({ content: "Saved successfully!" }); 
+            const response = await addMediaFile(file, localStorage.getItem('at'))
+            formData.media_url = response.media_url
+            await createMediaMetadata(formData, localStorage.getItem('at'))
+            setHasSaved(true)
+            message.success("Saved successfully!")
         } catch (err) {
-            message.error({ content: "Failed to save. Please try again!" });
-            console.log(err.message);
+            message.error("Failed to save. Please try again!")
+            console.log(err.message)
         } finally {
-            setIsLoading(false);
-            setMediaName();
-            setSelectedId();
-            setSearchValue('');
-            setOpenSaveCard(false);
+            setIsLoadingButton(false)
+            resetForm()
         }
-    };
+    }, [selectedId, hasSaved, caption, mediaName, file, setHasSaved])
 
-    const resetAndCloseDrawer = () => {
-        setOpenSaveCard(false);
-        setMediaName();
-        setSelectedId();
-        setSearchValue('');
-    };
+    const resetForm = useCallback(() => {
+        setMediaName('')
+        setSelectedId()
+        setSearchValue('')
+        setOpenSaveCard(false)
+    }, [setOpenSaveCard])
 
-    const successCreateAlbum = () => {
-        fetchAllAlbums(localStorage.getItem('at')).then(data => {
+    const handleCreateAlbumSuccess = useCallback(async () => {
+        try {
+            const data = await fetchAllAlbums(localStorage.getItem('at'))
             setAllAlbums(data)
             setFilteredAlbums(data)
             setOpenCreation(false)
-        })
-        .catch(err => console.error(err.message))
-    }
+        } catch (err) {
+            console.error(err.message)
+        }
+    }, [])
+
+    useEffect(() => {
+        fetchAlbumsData()
+    }, [fetchAlbumsData])
+
+    useEffect(() => {
+        handleResize()
+        window.addEventListener('resize', handleResize)
+        return () => window.removeEventListener('resize', handleResize)
+    }, [handleResize])
 
     return (
         <>
@@ -154,87 +170,95 @@ const SaveDrawer = ({ openSaveCard, setOpenSaveCard, hasSaved, setHasSaved, capt
                     </span>
                 }
                 open={openSaveCard}
-                onClose={resetAndCloseDrawer}
+                onClose={resetForm}
                 placement="right"
                 width="min(750px, 100vw)"
-                className="!bg-[#1E293B]"
+                className={themeClasses.drawer}
                 loading={isLoading}
                 extra={
                     <Button 
                         type="primary" 
                         onClick={handleSaveFile} 
-                        loading={isLoading} 
+                        loading={isLoadingButton} 
                     >
-                        Lưu
+                        Save
                     </Button>
                 }
-                closeIcon={<CloseOutlined className="!text-white hover:scale-105 transform hover:!text-red-600" />}
+                closeIcon={
+                    <CloseOutlined 
+                        className={`hover:scale-105 transform ${themeClasses.closeIcon}`} 
+                    />
+                }
             >
-                <div className="flex flex-col gap-5 w-full h-full overflow-auto">
+                <div className={`flex flex-col gap-5 w-full h-full overflow-auto ${themeClasses.text}`}>
                     <Input
-                        placeholder="Nhập tên hình ảnh"
-                        className="p-3 bg-gray-800 border-gray-700 rounded-xl text-gray-300 placeholder-gray-400 
-                            focus:outline-none focus:border-cyan-500 transition-all duration-300"
+                        placeholder="Enter the image name"
+                        className={`p-3 rounded-xl transition-all duration-300 ${themeClasses.input}`}
                         onChange={(e) => setMediaName(e.target.value)}
                         value={mediaName}
                         allowClear={false}
                     />
+                    
                     <AutoComplete
                         value={searchValue}
                         options={searchOptions}
                         onChange={handleSearch}
                         onSelect={handleSelectCollection}
                         className="w-full"
-                        placeholder="Tìm kiếm album"
+                        placeholder="Search album"
                         allowClear={false}
                         filterOption={false}
                     >
                         <Input 
-                            suffix={<SearchOutlined className="text-gray-400" />}
-                            placeholder="Tìm kiếm album"
-                            className="p-3 bg-gray-800 border-gray-700 rounded-xl text-gray-300 placeholder-gray-400 
-                                focus:outline-none focus:border-cyan-500 transition-all duration-300"
+                            suffix={<SearchOutlined className={themeClasses.searchIcon} />}
+                            placeholder="Search album"
+                            className={`p-3 rounded-xl transition-all duration-300 ${themeClasses.input}`}
                         />
                     </AutoComplete>
-                    <ImageList 
-                        cols={columns} 
-                        gap={columns === 1 ? 8 : columns === 2 ? 12 : 20} 
-                        className="!p-4 sm:!p-2 lg:!p-3 mt-1.5 max-h-full not-md:!gap-[18px]"
-                    >
-                        {filteredAlbums.map(({ album_id, album_name, thumbnail_url }) => (
-                            <ImageListItem 
-                                key={album_id} 
-                                className={`relative cursor-pointer rounded-xl transition-transform transform hover:scale-105 
-                                    shadow-xl max-w-full ${selectedId === album_id ? 'ring-4 ring-cyan-500' : 'opacity-90'}`}
-                                onClick={() => {
-                                    setSelectedId(selectedId === album_id ? undefined : album_id);
-                                }}
-                            >
-                                <div className="flex flex-col justify-center bg-[#263957] p-2 rounded-xl">
-                                    <LazyLoadImage 
-                                        src={thumbnail_url}
-                                        className="h-40 w-full max-w-full object-cover rounded-lg aspect-square"
-                                    />
-                                    <ImageListItemBar
-                                        title={<p className="text-gray-300 text-sm">{album_name}</p>}
-                                        position="below"
-                                        className="text-gray-300 rounded-b-xl text-center"
-                                    />
-                                </div>
-                                <div className="absolute top-2 right-2">
-                                    <Checkbox checked={selectedId === album_id} className="text-white" />
-                                </div>
-                            </ImageListItem>
-                        ))}
-                    </ImageList>
-                    {filteredAlbums.length === 0 && (
-                        <div className="flex flex-col items-center justify-center p-8 text-gray-400 gap-4">
-                            <h2>Không có album nào</h2>
+                    
+                    {filteredAlbums.length > 0 && (
+                        <ImageList 
+                            cols={columns} 
+                            gap={columns === 1 ? 8 : columns === 2 ? 12 : 20} 
+                            className="!p-4 sm:!p-2 lg:!p-3 mt-1.5 max-h-full not-md:!gap-[18px]"
+                        >
+                            {filteredAlbums.map(({ album_id, album_name, thumbnail_url }) => (
+                                <ImageListItem 
+                                    key={album_id} 
+                                    className={`relative cursor-pointer rounded-xl transition-transform transform hover:scale-105 
+                                        shadow-xl max-w-full ${selectedId === album_id ? 'ring-4 ring-cyan-500' : 'opacity-90'}`}
+                                    onClick={() => handleAlbumClick(album_id)}
+                                >
+                                    <div className={`flex flex-col justify-center p-2 rounded-xl ${themeClasses.albumBg}`}>
+                                        <LazyLoadImage 
+                                            src={thumbnail_url}
+                                            className="h-40 w-full max-w-full object-cover rounded-lg aspect-square"
+                                        />
+                                        <ImageListItemBar
+                                            title={<p className={themeClasses.albumText}>{album_name}</p>}
+                                            position="below"
+                                            className="rounded-b-xl text-center"
+                                        />
+                                    </div>
+                                    <div className="absolute top-2 right-2">
+                                        <Checkbox 
+                                            checked={selectedId === album_id} 
+                                            className={themeClasses.checkbox} 
+                                        />
+                                    </div>
+                                </ImageListItem>
+                            ))}
+                        </ImageList>
+                    )}
+                    
+                    {filteredAlbums.length === 0 && !isLoading && (
+                        <div className={`flex flex-col items-center justify-center p-8 gap-4 ${themeClasses.emptyState}`}>
+                            <h2>Album not found</h2>
                             <Button
                                 type="primary"
                                 onClick={() => setOpenCreation(true)}
                             >
-                                Tạo mới album
+                                Create new album
                             </Button>
                         </div>
                     )}
@@ -244,11 +268,10 @@ const SaveDrawer = ({ openSaveCard, setOpenSaveCard, hasSaved, setHasSaved, capt
             <Creation
                 openCreation={openCreation}
                 setOpenCreation={setOpenCreation}
-                onSuccess={successCreateAlbum}
+                onSuccess={handleCreateAlbumSuccess}
             />
         </>
+    )
+}
 
-    );
-};
-
-export default SaveDrawer;
+export default SaveDrawer

@@ -1,105 +1,54 @@
-import { useSelector, useDispatch } from "react-redux";
-import { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
-import { setUser, deleteState } from "../redux/appSlice";
-import { readUser, logout, refresh } from '../services/authService';
-import UserRoutes from './UserRoutes';
-import IntroRoutes from './IntroRoutes';
-import AdminRoutes from './AdminRoutes';
-import Loader from "../components/Loader";
+import { useDispatch } from "react-redux"
+import { useEffect } from "react"
+import { useNavigate } from "react-router-dom"
+import { setUser, deleteState, setMode } from "../redux/appSlice"
+import { readUser, logout } from "../services/authService"
+import UserRoutes from "./UserRoutes"
+import IntroRoutes from "./IntroRoutes"
+import AdminRoutes from "./AdminRoutes"
 
 function AppRoutes() {
-    const user = useSelector((state) => state.app.user);
-    const dispatch = useDispatch();
-    const [isLoading, setIsLoading] = useState(true);
-    const [authChecked, setAuthChecked] = useState(false);
-    const navigate = useNavigate();
+	const dispatch = useDispatch()
+	const navigate = useNavigate()
 
-    const handleLogout = async () => {
-        try {
-            setIsLoading(true);
-            await logout();
-            localStorage.removeItem('at');
-            localStorage.removeItem('hasLoggedIn');
-            dispatch(deleteState());
-            navigate('/');
-        } catch (error) {
-            console.error("Logout error:", error);
-        } finally {
-            setIsLoading(false);
-        }
-    };
+	const handleLogout = async () => {
+		try {
+			await logout()
+		} catch (err) {
+			console.err(err.message)
+		} finally {
+			localStorage.removeItem("at")
+			localStorage.removeItem('mode')
+			localStorage.removeItem('role')
+			dispatch(deleteState())
+			navigate("/")
+		}
+	}
 
-    const handleRefresh = async () => {
-        try {
-            setIsLoading(true);
-            const accessToken = await refresh();
-            localStorage.setItem("at", accessToken);
-            localStorage.setItem("hasLoggedIn", "true");
-            const userData = await readUser(accessToken);
-            dispatch(setUser(userData));
-            return true;
-        } catch (err) {
-            console.error(err);
-            if (localStorage.getItem("hasLoggedIn")) {
-                await handleLogout();
-            }
-            return false;
-        } finally {
-            setIsLoading(false);
-        }
-    };
+	useEffect(() => {
+		const initializeApp = async () => {
+			const accessToken = localStorage.getItem("at")
+			const savedMode = localStorage.getItem("mode") || "dark"
+			dispatch(setMode(savedMode))
 
-    const loadUserData = async () => {
-        const accessToken = localStorage.getItem('at');
-        const hasLoggedIn = localStorage.getItem('hasLoggedIn');
+			if (accessToken) {
+				try {
+					const userData = await readUser(accessToken)
+					dispatch(setUser(userData))
+				} catch (err) {
+					await handleLogout()
+				}
+			}
+		}
 
-        if (accessToken) {
-            try {
-                setIsLoading(true);
-                const userInfo = await readUser(accessToken);
-                dispatch(setUser(userInfo));
-                localStorage.setItem("hasLoggedIn", "true");
-            } catch (error) {
-                if (error.response && (error.response.status === 401 || error.response.status === 403)) {
-                    if (hasLoggedIn) {
-                        await handleRefresh();
-                    } else {
-                        localStorage.removeItem('at');
-                    }
-                } else {
-                    throw error;
-                }
-            } finally {
-                setAuthChecked(true);
-            }
-        }
-        setIsLoading(false);
-    };
+		initializeApp()
+	}, [])
 
-    useEffect(() => {
-        loadUserData();
-    }, []);
-
-    useEffect(() => {
-        const intervalId = setInterval(() => {
-            if (localStorage.getItem("at") && localStorage.getItem("hasLoggedIn")) {
-                handleRefresh();
-            }
-        }, 30 * 60 * 1000);
-        
-        return () => clearInterval(intervalId);
-    }, []);
-
-    if (isLoading && !authChecked) {
-        return <Loader />;
-    }
-
-    if (user) {
-        return user.role === 'admin' ? <AdminRoutes /> : <UserRoutes />;
-    } else {
-        return <IntroRoutes />;
-    }
+	if (localStorage.getItem('role')) {
+		return localStorage.getItem('role') === "admin" ? <AdminRoutes /> : <UserRoutes />
+	}
+	
+	return <IntroRoutes />
 }
 
-export default AppRoutes;
+export default AppRoutes

@@ -7,4 +7,4 @@ def generate_presigned_url(media_url: str, s3_client):
         Params={'Bucket': config.BUCKET_NAME, 'Key': media_url},
         ExpiresIn=3600
     )
-    return presigned_url
+    return presigned_url    

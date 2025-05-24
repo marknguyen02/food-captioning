@@ -9,7 +9,7 @@ from .args import get_parser
 import io
 
 
-data_dir = '/home/marknguyen/VSCodeProjects/vs-cap-app/models'
+data_dir = '/app/models'
 device = torch.device('cpu')
 map_loc = 'cpu'
 

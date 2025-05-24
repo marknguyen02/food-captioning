@@ -34,7 +34,7 @@ function IntroHeader() {
                 </span>
             </div>
 
-            <div className='flex items-center ml-auto gap-5'>
+            <div className='flex items-center ml-auto gap-5 mr-2.5'>
                 {navItems.map((item) => (
                     <NavItem 
                         key={item.path}
@@ -46,14 +46,14 @@ function IntroHeader() {
                 ))}
 
                 <Button 
-                    className='w-[60px] border-blue-200 hover:!text-blue-600 hover:!border-blue-300 hover:!bg-blue-50 hover:!shadow-md hover:!shadow-blue-100/50 transition-all duration-300'
+                    className='w-[60px] !py-3 !px-10 !text-[16px] border-blue-200 hover:!text-blue-600 hover:!border-blue-300 hover:!bg-blue-50 hover:!shadow-md hover:!shadow-blue-100/50 transition-all duration-300'
                     onClick={() => handleClickPage('signup')}
                 >
                     Sign up
                 </Button>
                 <Button 
                     type="primary" 
-                    className='w-[70px] !bg-gradient-to-r !from-blue-500 !to-blue-600 hover:!shadow-lg hover:!shadow-blue-200/50 !border-none !text-white !font-semibold transition-all duration-300'
+                    className='w-[70px] !py-[18px] !px-12 !text-[16px] !bg-gradient-to-r !from-blue-500 !to-blue-600 hover:!shadow-lg hover:!shadow-blue-200/50 !border-none !text-white !font-semibold transition-all duration-300'
                     onClick={() => handleClickPage('login')}
                 >
                     Login
@@ -66,7 +66,7 @@ function IntroHeader() {
 const NavItem = ({ title, active, onClick }) => {
     return (
         <span 
-            className={`relative cursor-pointer select-none font-semibold transition-all duration-300 box-border not-md:hidden ${
+            className={`text-[16px] relative cursor-pointer select-none font-semibold transition-all duration-300 box-border not-md:hidden ${
                 active ? 'text-blue-600' : 'text-gray-600 hover:text-blue-500 hover:scale-105'
             }`}
             onClick={onClick}
