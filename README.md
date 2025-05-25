@@ -118,12 +118,5 @@ docker run -d -p 8000:8000 --env-file .env --name backend marknguyen02/visual-ca
 docker run -d -p 3000:3000 --name frontend marknguyen02/visual-captioning-frontend
 ```
 
-## Đóng góp
-
-Chúng tôi hoan nghênh mọi đóng góp cho dự án! Hãy làm theo các bước sau:
-
-1. Fork repository
-2. Tạo branch mới (`git checkout -b feature/amazing-feature`)
-3. Commit thay đổi (`git commit -m 'Add some amazing feature'`)
-4. Push lên branch (`git push origin feature/amazing-feature`)
-5. Tạo Pull Request
+## Kết quả
+Chi tiết video demo xem tại đây: [**Video**](https://drive.google.com/file/d/1OaFNeauY_yB5Tw9ItD_2tiuk_8JeoVlm/view?usp=sharing)
