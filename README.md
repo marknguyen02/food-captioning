@@ -7,7 +7,6 @@ Visual Captioning là dự án tạo chú thích tự động cho ảnh sử d�
 ## Tính năng chính
 
 - **Phân tích hình ảnh tự động** sử dụng các mô hình CNN và Vision Transformer
-- **Tạo mô tả chính xác** bằng nhiều ngôn ngữ khác nhau
 - **Giao diện web thân thiện** cho người dùng
 - **Lưu trữ đám mây** để quản lý hình ảnh và mô tả
 - **API RESTful** cho tích hợp với các ứng dụng khác
@@ -43,12 +42,9 @@ Visual Captioning là dự án tạo chú thích tự động cho ảnh sử d�
 ### 2. Clone và cấu hình dự án
 
 ```bash
-# Clone repository
-git clone git@github.com:anh7777/Visual-Captioning.git
-cd visual-captioning
+git clone git@github.com:anh7777/visual_captioning_website.git
 
-# Cấu hình backend
-cd application/backend
+cd backend
 ```
 
 Tạo file `.env` với nội dung sau:
@@ -89,7 +85,7 @@ Sau khi triển khai thành công:
 #### Backend
 
 ```bash
-cd application/backend
+cd backend
 python -m venv venv
 source venv/bin/activate
 pip install -r requirements.txt
@@ -99,7 +95,7 @@ uvicorn app.main:app --reload
 #### Frontend
 
 ```bash
-cd application/frontend
+cd frontend
 npm install
 npm start
 ```
@@ -110,8 +106,8 @@ Nếu bạn muốn sử dụng Docker image có sẵn:
 
 ```bash
 # Pull image backend và frontend
-docker pull your-dockerhub-username/visual-captioning-backend
-docker pull your-dockerhub-username/visual-captioning-frontend
+docker pull marknguyenn02/visual-captioning-backend
+docker pull marknguyenn02/visual-captioning-frontend
 
 # Chạy container
 docker run -d -p 8000:8000 --env-file .env --name backend marknguyen02/visual-captioning-backend
