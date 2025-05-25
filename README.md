@@ -66,13 +66,10 @@ BUCKET_NAME="your_s3_bucket_name"
 ### 3. Triển khai với Docker
 
 ```bash
-# Quay lại thư mục gốc
 cd ../
 
-# Build Docker images
 docker-compose build
 
-# Khởi chạy ứng dụng
 docker-compose up
 ```
 
@@ -105,11 +102,9 @@ npm start
 Nếu bạn muốn sử dụng Docker image có sẵn:
 
 ```bash
-# Pull image backend và frontend
 docker pull marknguyenn02/visual-captioning-backend
 docker pull marknguyenn02/visual-captioning-frontend
 
-# Chạy container
 docker run -d -p 8000:8000 --env-file .env --name backend marknguyen02/visual-captioning-backend
 docker run -d -p 3000:3000 --name frontend marknguyen02/visual-captioning-frontend
 ```
