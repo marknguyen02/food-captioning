@@ -1,6 +1,6 @@
 # Visual Captioning
 
-## 📋 Overview
+## Overview
 
 Visual Captioning là dự án tạo chú thích tự động cho ảnh sử dụng học sâu. Hệ thống này kết hợp các mô hình học sâu tiên tiến để phân tích hình ảnh và tạo mô tả chính xác bằng ngôn ngữ tự nhiên.
 
