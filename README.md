@@ -6,10 +6,34 @@ Visual Captioning là một dự án tạo chú thích cho hình ảnh món ăn 
 
 ## Tính năng chính
 
-- Phân tích hình ảnh tự động sử dụng các mô hình CNN và Vision Transformer
-- Giao diện website thân thiện cho người dùng
-- Lưu trữ đám mây để quản lý hình ảnh và mô tả
-- API RESTful cho tích hợp với các ứng dụng khác
+- Phân tích và mô tả hình ảnh đầu vào.
+- Suy luận nguyên liệu và đề xuất công thức nấu ăn.
+- Giao diện website thân thiện cho người dùng.
+- Lưu trữ đám mây để quản lý hình ảnh và mô tả.
+- API RESTful cho tích hợp với các ứng dụng khác.
+
+## Thiết kế hệ thống
+
+### Kiến trúc hệ thống
+
+<p align="center">
+  <img src="./images/Image Captioning Architecture.png" alt="Image Captioning Architecture">
+</p>
+
+Hệ thống Visual Captioning được thiết kế với kiến trúc đơn giản và dễ dàng triển khai:
+
+* **Môi trường huấn luyện**: Kaggle Notebooks.
+* **Cơ sở dữ liệu metadata**: MongoDB Cloud.
+* **Hệ thống lưu trữ NoSQL**: AWS S3.
+* **Máy chủ triển khai**: AWS EC2.
+
+
+
+### Lược đồ dữ liệu
+
+<p align="center">
+  <img src="./images/Entity RelationShip Database.png" alt="Image Captioning Architecture">
+</p>
 
 ## Yêu cầu hệ thống
 
