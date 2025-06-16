@@ -2,20 +2,20 @@
 
 ## Overview
 
-Visual Captioning là dự án tạo chú thích tự động cho ảnh sử dụng học sâu. Hệ thống này kết hợp các mô hình học sâu tiên tiến để phân tích hình ảnh và tạo mô tả chính xác bằng ngôn ngữ tự nhiên.
+Visual Captioning là một dự án tạo chú thích cho hình ảnh món ăn bằng cách sử dụng các kỹ thuật học sâu. Hệ thống này kết hợp các mô hình học sâu hiện đại để phân tích hình ảnh món ăn, nhận diện các thành phần và đặc điểm nổi bật, từ đó tạo ra mô tả chính xác và tự nhiên bằng ngôn ngữ, đưa ra nguyên liệu và hướng dẫn giúp người dùng hiểu rõ hơn về món ăn trong ảnh.
 
 ## Tính năng chính
 
-- **Phân tích hình ảnh tự động** sử dụng các mô hình CNN và Vision Transformer
-- **Giao diện web thân thiện** cho người dùng
-- **Lưu trữ đám mây** để quản lý hình ảnh và mô tả
-- **API RESTful** cho tích hợp với các ứng dụng khác
+- Phân tích hình ảnh tự động sử dụng các mô hình CNN và Vision Transformer
+- Giao diện website thân thiện cho người dùng
+- Lưu trữ đám mây để quản lý hình ảnh và mô tả
+- API RESTful cho tích hợp với các ứng dụng khác
 
 ## Yêu cầu hệ thống
 
-- Python 3.8+
+- Python 3.10+
 - Node.js 16+
-- Docker và Docker Compose
+- Docker
 - MongoDB
 - AWS S3
 
@@ -94,7 +94,7 @@ uvicorn app.main:app --reload
 ```bash
 cd frontend
 npm install
-npm start
+npm run dev
 ```
 
 ## Triển khai từ Docker Hub
@@ -109,5 +109,5 @@ docker run -d -p 8000:8000 --env-file .env --name backend marknguyen02/visual-ca
 docker run -d -p 3000:3000 --name frontend marknguyen02/visual-captioning-frontend
 ```
 
-## Kết quả
-Chi tiết video demo xem tại đây: [**Video**](https://drive.google.com/file/d/1OaFNeauY_yB5Tw9ItD_2tiuk_8JeoVlm/view?usp=sharing)
+## Demo
+Chi tiết về giao diện website và hướng dẫn sử dụng hệ thống có thể xem đầy đủ [**tại đây**](https://drive.google.com/file/d/1OaFNeauY_yB5Tw9ItD_2tiuk_8JeoVlm/view?usp=sharing)
