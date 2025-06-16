@@ -4,6 +4,39 @@
 
 Visual Captioning là một dự án tạo chú thích cho hình ảnh món ăn bằng cách sử dụng các kỹ thuật học sâu. Hệ thống này kết hợp các mô hình học sâu hiện đại để phân tích hình ảnh món ăn, nhận diện các thành phần và đặc điểm nổi bật, từ đó tạo ra mô tả chính xác và tự nhiên bằng ngôn ngữ, đưa ra nguyên liệu và hướng dẫn giúp người dùng hiểu rõ hơn về món ăn trong ảnh.
 
+## Cấu trúc thư mục
+ ```
+visual_captioning/
+│ 
+├── backend/
+│   ├── app/                    # Mã nguồn backend
+│   ├── models/                 # Các mô hình deep learning
+│   ├── .env                    # Biến môi trường cho backend
+│   ├── .gitignore
+│   ├── Dockerfile              # Dockerfile cho backend
+│   └── requirements.txt        # Danh sách thư viện Python
+│
+├── frontend/
+│   ├── public/                 # Tài nguyên tĩnh
+│   ├── src/                    # Mã nguồn React
+│   ├── .env                    # Biến môi trường cho frontend
+│   ├── .gitignore
+│   ├── Dockerfile              # Dockerfile cho frontend
+│   ├── eslint.config.js        # Cấu hình ESLint
+│   ├── index.html              # File HTML chính
+│   ├── package.json            # Cấu hình npm
+│   ├── package-lock.json       # Khóa phiên bản gói npm
+│   └── vite.config.js          # Cấu hình Vite
+│
+├── images/                     # Ảnh minh họa
+│
+├── docker-compose.yml          # Cấu hình Docker
+│
+├── README.md                   # Tài liệu hướng dẫn
+│
+└── REPORT.pdf                  # Báo cáo đồ án
+```
+
 ## Tính năng chính
 
 - Phân tích và mô tả hình ảnh đầu vào.
@@ -134,4 +167,4 @@ docker run -d -p 3000:3000 --name frontend marknguyen02/visual-captioning-fronte
 ```
 
 ## Demo
-Chi tiết về giao diện website và hướng dẫn sử dụng hệ thống có thể xem đầy đủ [**tại đây**](https://drive.google.com/file/d/1OaFNeauY_yB5Tw9ItD_2tiuk_8JeoVlm/view?usp=sharing)
+Chi tiết về giao diện website và hướng dẫn sử dụng hệ thống có thể xem đầy đủ [**tại đây.**](https://drive.google.com/file/d/1OaFNeauY_yB5Tw9ItD_2tiuk_8JeoVlm/view?usp=sharing)
